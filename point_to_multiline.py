@@ -2,10 +2,10 @@ from osgeo import ogr, osr, gdal
 
 class PointsToMultiPath(object):
     def __init__(self, connection_string, in_layer_name, out_layer_name, sort_by_attr, group_by_attr):
-        self.in_layer_name = in_layer_name
-        self.out_layer_name = out_layer_name
-        self.sort_by_attr = sort_by_attr
-        self.group_by_attr = group_by_attr
+        self.in_layer_name = str(in_layer_name)
+        self.out_layer_name = str(out_layer_name)
+        self.sort_by_attr = str(sort_by_attr)
+        self.group_by_attr = str(group_by_attr)
         self.conn = ogr.Open(connection_string)
 
         self.get_in_layer()
