@@ -77,6 +77,9 @@ const SelectComponent = (props) => {
         id: inputId,
       }}
     >
+      <MenuItem value="">
+        <em>Empty!</em>
+      </MenuItem>
       {
         attributes
           .filter(attr => filterFunction(attr))
@@ -165,8 +168,8 @@ export default function OutlinedInputAdornments(props) {
         />
         <Button className={classes.applyButton} onClick={onApply} size={"large"} disabled={loading}>
           {
-            loading && 
-            <CircularProgress className={classes.progress} size={15}/>
+            loading &&
+            <CircularProgress className={classes.progress} size={15} />
           }
           Apply
             </Button>

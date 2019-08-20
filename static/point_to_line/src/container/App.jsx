@@ -181,17 +181,11 @@ export default class App extends Component {
                 sortByValue: true
             }
         }
-        if (!emptyOrUndefined(form.groupByValue)) {
-            formErrors = {
-                ...formErrors,
-                groupByValue: true
-            }
-        }
         return formErrors
     }
     apply() {
         const handleFailure = (res) => {
-            res.json().then(jsonResponse=>{
+            res.json().then(jsonResponse => {
                 this.setState({
                     loading: false,
                     resultsDialog: {
@@ -205,7 +199,7 @@ export default class App extends Component {
             })
         }
         const handleSuccess = (res) => {
-            res.json().then(jsonResponse=>{
+            res.json().then(jsonResponse => {
                 this.setState({
                     loading: false,
                     resultsDialog: {
@@ -227,7 +221,8 @@ export default class App extends Component {
             let form = new FormData();
             form.append('in_layer_name', inLayerName)
             form.append('sort_by_attr', sortByValue)
-            form.append('group_by_attr', groupByValue)
+            if (groupByValue && groupByValue.length > 0)
+                form.append('group_by_attr', groupByValue)
             form.append('out_layer_name', outLayerName)
             form.append('csrfmiddlewaretoken', getCRSFToken())
             fetch(this.urls.generateLineLayer, {
