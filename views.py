@@ -47,7 +47,6 @@ def generate(request):
                 sort_by_attr,
                 group_by_attr
             )
-
             try:
                 p.start_connection()
             except:
@@ -56,7 +55,7 @@ def generate(request):
                 return JsonResponse(json_response, status=500)
             try:
                 p.execute()
-                p.close_conn()
+                p.close_connection()
             except:
                 json_response = {"status": False,
                                  "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator", }

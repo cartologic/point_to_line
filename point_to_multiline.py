@@ -6,7 +6,7 @@ class PointsToMultiPath(object):
         self.in_layer_name = str(in_layer_name)
         self.out_layer_name = str(out_layer_name)
         self.sort_by_attr = str(sort_by_attr)
-        self.group_by_attr = str(group_by_attr)
+        self.group_by_attr = str(group_by_attr) if group_by_attr is not None else None
         self.connection_string = connection_string
 
     def start_connection(self):
@@ -14,7 +14,7 @@ class PointsToMultiPath(object):
 
     def execute(self):
         self.get_in_layer()
-        self.group_by_index = self.get_field_index(self.group_by_attr)
+        self.group_by_index = self.get_field_index(self.group_by_attr) if self.group_by_attr is not None else None
         self.sort_by_index = self.get_field_index(self.sort_by_attr)
         
         self.create_out_layer()
@@ -47,6 +47,10 @@ class PointsToMultiPath(object):
         
     def create_features_dict(self):
         features_dict = {}
+        # consider all point features in one line feature if not (group by)
+        if self.group_by_index is None:
+            features_dict['single_feature'] = [f for f in self.in_layer]
+            return features_dict
         for f in self.in_layer:
             line_name = f[self.group_by_index]
             try:
@@ -64,7 +68,6 @@ class PointsToMultiPath(object):
         out_features = []
         for i, key in enumerate(self.features_dict, start=1):
             # sort features by sort attr inside the dict:
-            feat = self.features_dict[key][0][self.sort_by_index]
             sorted_features = self.features_dict[key]
             sorted_features.sort(key=lambda f: f[self.sort_by_index])
             ids = [f[self.sort_by_index] for f in sorted_features]
