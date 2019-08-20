@@ -39,15 +39,24 @@ def generate(request):
                                  "message": "Layer Already Exists!, Try again with different layer name, If you don't see the existing layer in the layer list, Please contact the administrator", }
                 return JsonResponse(json_response, status=500)
             # 3. Start Generating layer
+            connection_string = create_connection_string()
+            p = PointsToMultiPath(
+                connection_string,
+                in_layer_name,
+                out_layer_name,
+                sort_by_attr,
+                group_by_attr
+            )
+
             try:
-                connection_string = create_connection_string()
-                p = PointsToMultiPath(
-                    connection_string,
-                    in_layer_name,
-                    out_layer_name,
-                    sort_by_attr,
-                    group_by_attr
-                )
+                p.start_connection()
+            except:
+                json_response = {"status": False,
+                                 "message": "Error while connecting to database! Try again or contact the administrator", }
+                return JsonResponse(json_response, status=500)
+            try:
+                p.execute()
+                p.close_conn()
             except:
                 json_response = {"status": False,
                                  "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator", }

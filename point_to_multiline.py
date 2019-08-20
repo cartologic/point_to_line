@@ -1,4 +1,5 @@
-from osgeo import ogr, osr, gdal
+from osgeo import ogr, osr
+
 
 class PointsToMultiPath(object):
     def __init__(self, connection_string, in_layer_name, out_layer_name, sort_by_attr, group_by_attr):
@@ -6,20 +7,21 @@ class PointsToMultiPath(object):
         self.out_layer_name = str(out_layer_name)
         self.sort_by_attr = str(sort_by_attr)
         self.group_by_attr = str(group_by_attr)
-        self.conn = ogr.Open(connection_string)
+        self.connection_string = connection_string
 
+    def start_connection(self):
+        self.conn = ogr.Open(self.connection_string)
+
+    def execute(self):
         self.get_in_layer()
-        self.create_out_layer()
-
-        self.group_by_index = self.get_field_index(group_by_attr)
-        self.sort_by_index = self.get_field_index(sort_by_attr)
+        self.group_by_index = self.get_field_index(self.group_by_attr)
+        self.sort_by_index = self.get_field_index(self.sort_by_attr)
         
+        self.create_out_layer()
         self.features_dict = self.create_features_dict()
         self.out_features = self.create_out_features()
 
         self.commit_transactions()
-        self.close_conn()
-
 
     def get_in_layer(self):
         self.in_layer = self.conn.GetLayer( self.in_layer_name )
@@ -90,5 +92,5 @@ class PointsToMultiPath(object):
             self.out_layer.CreateFeature(feature)
             self.out_layer.CommitTransaction()
 
-    def close_conn(self):
+    def close_connection(self):
         self.conn = None
