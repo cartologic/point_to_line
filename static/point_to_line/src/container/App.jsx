@@ -16,7 +16,11 @@ export default class App extends Component {
                 attributes: [],
                 sortByValue: '',
                 groupByValue: '',
-                outLayerName: ''
+                outLayerName: '',
+                errors: {},
+            },
+            resultsDialog: {
+                open: false,
             }
         }
         // globalURLS are predefined in index.html otherwise use the following defaults
@@ -128,24 +132,97 @@ export default class App extends Component {
             }
         })
     }
+    validateFormData(form) {
+        let emptyOrUndefined = (str) => {
+            return str && str.length > 0
+        }
+        let validateTableName = (tableName) => {
+            let re = /^[a-z0-9_]{1,63}$/
+            return tableName && re.test(tableName)
+        }
+        let formErrors = undefined
+        if (!emptyOrUndefined(form.inLayerName)) {
+            formErrors = {
+                ...formErrors,
+                inLayerName: true
+            }
+        }
+        if (!validateTableName(form.outLayerName)) {
+            formErrors = {
+                ...formErrors,
+                outLayerName: true
+            }
+        }
+        if (!emptyOrUndefined(form.sortByValue)) {
+            formErrors = {
+                ...formErrors,
+                sortByValue: true
+            }
+        }
+        if (!emptyOrUndefined(form.groupByValue)) {
+            formErrors = {
+                ...formErrors,
+                groupByValue: true
+            }
+        }
+        return formErrors
+    }
     apply() {
+        const submit = ({
+            inLayerName,
+            outLayerName,
+            sortByValue,
+            groupByValue
+        }) => {
+            let form = new FormData();
+            form.append('in_layer_name', inLayerName)
+            form.append('sort_by_attr', sortByValue)
+            form.append('group_by_attr', groupByValue)
+            form.append('out_layer_name', outLayerName)
+            form.append('csrfmiddlewaretoken', getCRSFToken())
+            fetch(this.urls.generateLineLayer, {
+                method: 'POST',
+                body: form,
+                credentials: 'same-origin',
+            })
+        }
         const {
             selectedResource,
             sortByValue,
             groupByValue,
             outLayerName,
         } = this.state.publishForm
-        let form = new FormData();
-        form.append('in_layer_name', selectedResource.name)
-        form.append('sort_by_attr', sortByValue)
-        form.append('group_by_attr', groupByValue)
-        form.append('out_layer_name', outLayerName)
-        form.append('csrfmiddlewaretoken', getCRSFToken())
-        fetch(this.urls.generateLineLayer, {
-            method: 'POST',
-            body: form,
-            credentials: 'same-origin',
+        const inLayerName = selectedResource && selectedResource.name
+        const errors = this.validateFormData({
+            inLayerName,
+            outLayerName,
+            sortByValue,
+            groupByValue
         })
+        if (errors) {
+            this.setState({
+                publishForm: {
+                    ...this.state.publishForm,
+                    errors,
+                }
+            })
+        } else {
+            this.setState({
+                publishForm: {
+                    ...this.state.publishForm,
+                    errors: {},
+                }
+            },
+                () => {
+                    submit({
+                        inLayerName,
+                        outLayerName,
+                        sortByValue,
+                        groupByValue
+                    })
+                }
+            )
+        }
     }
     render() {
         const props = {
@@ -165,6 +242,9 @@ export default class App extends Component {
                 groupByFilter,
                 outLayerNameChange: this.publishChange,
                 onApply: this.apply,
+            },
+            resultsDialog: {
+                ...this.state.resultsDialog,
             }
         }
         return (

@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
   },
   textField: {
     flexBasis: 100,
-    flexGrow: 3
+    flexGrow: 1,
   },
   inputGroup: {
     display: "flex",
@@ -41,9 +41,12 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 3,
     margin: "5px",
   },
-  applyButton: {
-    flexGrow: 1
-  }
+  outputFormControl: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 }));
 
 const SelectComponent = (props) => {
@@ -56,8 +59,10 @@ const SelectComponent = (props) => {
     inputId,
     filterFunction,
     inputLabel,
+    error,
+    helperText
   } = props
-  return <FormControl className={classes.formControl}>
+  return <FormControl className={classes.formControl} error={error}>
     <InputLabel htmlFor="sort-by-attribute">{inputLabel}</InputLabel>
     <Select
       disabled={attributes.length <= 0}
@@ -77,6 +82,7 @@ const SelectComponent = (props) => {
       }
 
     </Select>
+    <FormHelperText>{helperText}</FormHelperText>
   </FormControl>
 }
 
@@ -94,11 +100,13 @@ export default function OutlinedInputAdornments(props) {
     groupByValue,
     outLayerName,
     outLayerNameChange,
-    onApply
+    onApply,
+    errors
   } = props
   return (
     <div className={classes.root}>
       <TextField
+        error={errors && errors.inLayerName}
         className={clsx(classes.margin, classes.textField)}
         variant="outlined"
         label="Input Layer Name"
@@ -108,6 +116,7 @@ export default function OutlinedInputAdornments(props) {
           onClick: resourceSelectDialogOpen,
           placeholder: 'Input Layer Name'
         }}
+        helperText={'Please Select Layer'}
       />
       <div className={classes.inputGroup}>
         <SelectComponent
@@ -118,6 +127,8 @@ export default function OutlinedInputAdornments(props) {
           inputName={"sortByValue"}
           inputId={"sort-by-attribute"}
           inputLabel={"Sort By"}
+          error={errors && errors.sortByValue}
+          helperText={'Please Select Attribute'}
         />
         <SelectComponent
           attributes={attributes}
@@ -127,26 +138,29 @@ export default function OutlinedInputAdornments(props) {
           inputName={"groupByValue"}
           inputId={"group-by-attribute"}
           inputLabel={"Group By"}
+          error={errors && errors.groupByValue}
+          helperText={'Please Select Attribute'}
         />
       </div>
-      <FormControl className={classes.formControl}>
-        <FormGroup row>
-        <TextField
-          className={clsx(classes.margin, classes.textField)}
-          variant="outlined"
-          label="Output Layer Name"
-          value={outLayerName || ''}
-          onChange={outLayerNameChange}
-          InputProps={{
-            startAdornment: <InputAdornment position="start"> </InputAdornment>,
-            name: 'outLayerName',
-            placeholder: 'Output Layer Name'
-          }}
-        />
-        <Button className={classes.applyButton} onClick={onApply}>
-          Apply
-        </Button>
-        </FormGroup>
+      <FormControl className={classes.outputFormControl}>
+
+          <TextField
+            error={errors && errors.outLayerName}
+            className={clsx(classes.margin, classes.textField)}
+            variant="outlined"
+            label="Output Layer Name"
+            value={outLayerName || ''}
+            onChange={outLayerNameChange}
+            InputProps={{
+              startAdornment: <InputAdornment position="start"> </InputAdornment>,
+              name: 'outLayerName',
+              placeholder: 'Output Layer Name'
+            }}
+            helperText="Please Enter an Alphanumeric Ex: table_name_1, Max length: 63 character"
+          />
+            <Button className={classes.applyButton} onClick={onApply} size={"large"}>
+              Apply
+            </Button>
       </FormControl>
     </div>
   );
