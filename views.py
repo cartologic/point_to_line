@@ -36,7 +36,7 @@ def generate(request):
             group_by_attr = form.cleaned_data['group_by_attr']
             if table_exist(out_layer_name):
                 json_response = {"status": False,
-                                 "message": "Table Already Exists!", }
+                                 "message": "Layer Already Exists!, Try again with different layer name, If you don't see the existing layer in the layer list, Please contact the administrator", }
                 return JsonResponse(json_response, status=500)
             # 3. Start Generating layer
             connection_string = create_connection_string()
@@ -51,7 +51,7 @@ def generate(request):
                 )
             except:
                 json_response = {"status": False,
-                                 "message": "Error While Creating Line Layer!", }
+                                 "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator", }
                 return JsonResponse(json_response, status=500)
             # 4. Create GeoServer
             try:
@@ -59,7 +59,7 @@ def generate(request):
             except:
                 # TODO: roll back the database table here!
                 json_response = {
-                    "status": False, "message": "Could not publish to GeoServer", 'warnings': warnings}
+                    "status": False, "message": "Could not publish to GeoServer, Try again or contact the administrator", 'warnings': warnings}
                 return JsonResponse(json_response, status=500)
 
             # 5. GeoNode Publish
@@ -68,7 +68,7 @@ def generate(request):
             except:
                 # TODO: roll back the delete geoserver record and db name
                 json_response = {
-                    "status": False, "message": "Could not publish in GeoNode", 'warnings': warnings}
+                    "status": False, "message": "Could not publish in GeoNode, Try again or contact the administrator", 'warnings': warnings}
                 return JsonResponse(json_response, status=500)
 
             json_response = {"status": True, "message": "Line Layer Created Successfully!",
