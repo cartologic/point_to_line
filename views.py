@@ -39,7 +39,6 @@ def generate(request):
                                  "message": "Layer Already Exists!, Try again with different layer name, If you don't see the existing layer in the layer list, Please contact the administrator", }
                 return JsonResponse(json_response, status=500)
             # 3. Start Generating layer
-            connection_string = create_connection_string()
             try:
                 connection_string = create_connection_string()
                 p = PointsToMultiPath(

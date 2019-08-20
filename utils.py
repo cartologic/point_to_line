@@ -46,7 +46,8 @@ def create_connection_string():
     databaseName = settings['db_name']
     databaseUser = settings['user']
     databasePW = settings['password']
-    return "PG: host=%s dbname=%s user=%s password=%s" % (databaseServer,databaseName,databaseUser,databasePW)
+    databasePort = settings['port']
+    return "PG: host=%s port=%s dbname=%s user=%s password=%s" % (databaseServer, databasePort, databaseName,databaseUser, databasePW)
 
 def get_sld_body(url):
     req = requests.get(
