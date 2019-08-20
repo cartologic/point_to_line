@@ -29,6 +29,7 @@ export default (props) => {
     errors,
     warnings,
     success,
+    layerURL,
   } = props
   const classes = useStyles()
   return (
@@ -39,19 +40,29 @@ export default (props) => {
         aria-describedby="alert-dialog-description"
         fullWidth={false}
         maxWidth={'sm'}
-        onClose={handleClose}
       >
         <DialogTitle>Results:</DialogTitle>
         <DialogContent dividers>
-          <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-            in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-          </Typography>
+          {
+            errors &&
+            <Typography gutterBottom color={'error'}>
+              {errors}
+            </Typography>
+          }
+          {
+            success &&
+            <Typography gutterBottom>
+              {success}
+            </Typography>
+          }
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            View Layer
-          </Button>
+          {
+            success &&
+            <Link underline={'none'} color="inherit" href={layerURL}>
+              <Button color="inherit">View Layer</Button>
+            </Link>
+          }
           <Button onClick={handleClose} color="primary">
             Dismiss
           </Button>

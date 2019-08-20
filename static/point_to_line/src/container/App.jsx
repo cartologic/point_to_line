@@ -21,6 +21,9 @@ export default class App extends Component {
             },
             resultsDialog: {
                 open: false,
+                errors: undefined,
+                success: undefined,
+                layerName: undefined
             }
         }
         // globalURLS are predefined in index.html otherwise use the following defaults
@@ -28,6 +31,8 @@ export default class App extends Component {
         this.fetchResources = this.fetchResources.bind(this)
         this.resourceSelectDialogClose = this.resourceSelectDialogClose.bind(this)
         this.resourceSelectDialogOpen = this.resourceSelectDialogOpen.bind(this)
+        this.resultsDialogClose = this.resultsDialogClose.bind(this)
+        this.resultsDialogOpen = this.resultsDialogOpen.bind(this)
         this.onResourceSelect = this.onResourceSelect.bind(this)
         this.getLayerAttributes = this.getLayerAttributes.bind(this)
         this.publishChange = this.publishChange.bind(this)
@@ -45,6 +50,22 @@ export default class App extends Component {
         this.setState({
             resourceSelectDialog: {
                 ...this.state.resourceSelectDialog,
+                open: true
+            }
+        })
+    }
+    resultsDialogClose() {
+        this.setState({
+            resultsDialog: {
+                ...this.state.resultsDialog,
+                open: false
+            }
+        })
+    }
+    resultsDialogOpen() {
+        this.setState({
+            resultsDialog: {
+                ...this.state.resultsDialog,
                 open: true
             }
         })
@@ -168,6 +189,34 @@ export default class App extends Component {
         return formErrors
     }
     apply() {
+        const handleFailure = (res) => {
+            res.json().then(jsonResponse=>{
+                this.setState({
+                    loading: false,
+                    resultsDialog: {
+                        ...this.state.resultsDialog,
+                        open: true,
+                        errors: jsonResponse.message,
+                        success: undefined,
+                        layerName: undefined,
+                    }
+                })
+            })
+        }
+        const handleSuccess = (res) => {
+            res.json().then(jsonResponse=>{
+                this.setState({
+                    loading: false,
+                    resultsDialog: {
+                        ...this.state.resultsDialog,
+                        open: true,
+                        errors: undefined,
+                        success: jsonResponse.message,
+                        layerURL: this.urls.layerDetail(jsonResponse.layer_name),
+                    }
+                })
+            })
+        }
         const submit = ({
             inLayerName,
             outLayerName,
@@ -185,6 +234,14 @@ export default class App extends Component {
                 body: form,
                 credentials: 'same-origin',
             })
+                .then(res => {
+                    if (res.status == 500) {
+                        handleFailure(res)
+                    }
+                    if (res.status == 200) {
+                        handleSuccess(res)
+                    }
+                })
         }
         const {
             selectedResource,
@@ -245,6 +302,7 @@ export default class App extends Component {
             },
             resultsDialog: {
                 ...this.state.resultsDialog,
+                handleClose: this.resultsDialogClose,
             }
         }
         return (
