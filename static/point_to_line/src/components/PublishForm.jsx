@@ -16,6 +16,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,6 +48,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  progress: {
+    margin: '5px',
+  },
 }));
 
 const SelectComponent = (props) => {
@@ -60,7 +64,7 @@ const SelectComponent = (props) => {
     filterFunction,
     inputLabel,
     error,
-    helperText
+    helperText,
   } = props
   return <FormControl className={classes.formControl} error={error}>
     <InputLabel htmlFor="sort-by-attribute">{inputLabel}</InputLabel>
@@ -101,7 +105,8 @@ export default function OutlinedInputAdornments(props) {
     outLayerName,
     outLayerNameChange,
     onApply,
-    errors
+    errors,
+    loading
   } = props
   return (
     <div className={classes.root}>
@@ -144,22 +149,26 @@ export default function OutlinedInputAdornments(props) {
       </div>
       <FormControl className={classes.outputFormControl}>
 
-          <TextField
-            error={errors && errors.outLayerName}
-            className={clsx(classes.margin, classes.textField)}
-            variant="outlined"
-            label="Output Layer Name"
-            value={outLayerName || ''}
-            onChange={outLayerNameChange}
-            InputProps={{
-              startAdornment: <InputAdornment position="start"> </InputAdornment>,
-              name: 'outLayerName',
-              placeholder: 'Output Layer Name'
-            }}
-            helperText="Please Enter an Alphanumeric Ex: table_name_1, Max length: 63 character"
-          />
-            <Button className={classes.applyButton} onClick={onApply} size={"large"}>
-              Apply
+        <TextField
+          error={errors && errors.outLayerName}
+          className={clsx(classes.margin, classes.textField)}
+          variant="outlined"
+          label="Output Layer Name"
+          value={outLayerName || ''}
+          onChange={outLayerNameChange}
+          InputProps={{
+            startAdornment: <InputAdornment position="start"> </InputAdornment>,
+            name: 'outLayerName',
+            placeholder: 'Output Layer Name'
+          }}
+          helperText="Please Enter an Alphanumeric Ex: table_name_1, Max length: 63 character"
+        />
+        <Button className={classes.applyButton} onClick={onApply} size={"large"} disabled={loading}>
+          {
+            loading && 
+            <CircularProgress className={classes.progress} size={15}/>
+          }
+          Apply
             </Button>
       </FormControl>
     </div>

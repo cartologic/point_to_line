@@ -7,6 +7,7 @@ export default class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            loading: false,
             resourceSelectDialog: {
                 open: false,
                 resources: [],
@@ -268,7 +269,8 @@ export default class App extends Component {
                 publishForm: {
                     ...this.state.publishForm,
                     errors: {},
-                }
+                },
+                loading: true
             },
                 () => {
                     submit({
@@ -299,6 +301,7 @@ export default class App extends Component {
                 groupByFilter,
                 outLayerNameChange: this.publishChange,
                 onApply: this.apply,
+                loading: this.state.loading
             },
             resultsDialog: {
                 ...this.state.resultsDialog,
