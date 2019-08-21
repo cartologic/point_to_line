@@ -175,12 +175,6 @@ export default class App extends Component {
                 outLayerName: true
             }
         }
-        if (!emptyOrUndefined(form.sortByValue)) {
-            formErrors = {
-                ...formErrors,
-                sortByValue: true
-            }
-        }
         return formErrors
     }
     apply() {
@@ -220,7 +214,8 @@ export default class App extends Component {
         }) => {
             let form = new FormData();
             form.append('in_layer_name', inLayerName)
-            form.append('sort_by_attr', sortByValue)
+            if (sortByValue && sortByValue.length > 0)
+                form.append('group_by_attr', sortByValue)
             if (groupByValue && groupByValue.length > 0)
                 form.append('group_by_attr', groupByValue)
             form.append('out_layer_name', outLayerName)

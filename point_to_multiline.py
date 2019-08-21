@@ -5,7 +5,7 @@ class PointsToMultiPath(object):
     def __init__(self, connection_string, in_layer_name, out_layer_name, sort_by_attr, group_by_attr):
         self.in_layer_name = str(in_layer_name)
         self.out_layer_name = str(out_layer_name)
-        self.sort_by_attr = str(sort_by_attr)
+        self.sort_by_attr = str(sort_by_attr) if sort_by_attr is not None else None
         self.group_by_attr = str(group_by_attr) if group_by_attr is not None else None
         self.connection_string = connection_string
 
@@ -15,7 +15,7 @@ class PointsToMultiPath(object):
     def execute(self):
         self.get_in_layer()
         self.group_by_index = self.get_field_index(self.group_by_attr) if self.group_by_attr is not None else None
-        self.sort_by_index = self.get_field_index(self.sort_by_attr)
+        self.sort_by_index = self.get_field_index(self.sort_by_attr) if self.sort_by_attr is not None else None
         
         self.create_out_layer()
         self.features_dict = self.create_features_dict()
@@ -69,8 +69,8 @@ class PointsToMultiPath(object):
         for i, key in enumerate(self.features_dict, start=1):
             # sort features by sort attr inside the dict:
             sorted_features = self.features_dict[key]
-            sorted_features.sort(key=lambda f: f[self.sort_by_index])
-            ids = [f[self.sort_by_index] for f in sorted_features]
+            if self.sort_by_index is not None:
+                sorted_features.sort(key=lambda f: f[self.sort_by_index])
 
             # create a new line geometry
             line = ogr.Geometry(ogr.wkbLineString)
