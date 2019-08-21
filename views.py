@@ -44,8 +44,8 @@ def generate(request):
                 connection_string,
                 in_layer_name,
                 out_layer_name,
-                sort_by_attr,
-                group_by_attr
+                sort_by_attr=sort_by_attr,
+                group_by_attr=group_by_attr,
             )
             try:
                 p.start_connection()
