@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import MainPage from '../components/MainPage'
-import { getCRSFToken, sortByFilter, groupByFilter } from '../utils'
+import { getCRSFToken, groupByFilter } from '../utils'
 import UrlAssembler from 'url-assembler'
-
+const sortByFilter = groupByFilter
 export default class App extends Component {
     constructor(props) {
         super(props)

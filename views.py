@@ -1,7 +1,6 @@
 import os
 import re
 import uuid
-from datetime import datetime
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -9,11 +8,11 @@ from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from .forms import PointToLineForm
-from .utils import table_exist, create_connection_string
-from .point_to_multiline import PointsToMultiPath
-from .publishers import publish_in_geoserver, publish_in_geonode
 from . import APP_NAME
+from .forms import PointToLineForm
+from .point_to_multiline import PointsToMultiPath
+from .publishers import publish_in_geonode, publish_in_geoserver
+from .utils import create_connection_string, table_exist
 
 
 @login_required
@@ -56,9 +55,11 @@ def generate(request):
             try:
                 p.execute()
                 p.close_connection()
-            except:
+            except Exception as e:
+                # TODO: roll back delete layer(table) from database if created!
+                ogr_error = 'Error while creating Line Layer: {}'.format(e)
                 json_response = {"status": False,
-                                 "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator", }
+                                 "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator \n\n ogr_error:{}".format(ogr_error), }
                 return JsonResponse(json_response, status=500)
             # 4. Create GeoServer
             try:
