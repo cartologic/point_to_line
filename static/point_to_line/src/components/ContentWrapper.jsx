@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import PublishForm from './PublishForm'
 import ResourceSelectDialog from './ResourceSelectDialog'
 import ResultsDialog from './ResultsDialog'
+import OutLayersDialog from './OutLayersDialog'
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
@@ -18,6 +19,7 @@ export default (props) => {
         <PublishForm {...props.publishForm}/>
         <ResourceSelectDialog {...props.resourceSelectProps}/>
         <ResultsDialog {...props.resultsDialog}/>
+        <OutLayersDialog {...props.outLayersDialog}/>
       </Paper>
     </div>
   );

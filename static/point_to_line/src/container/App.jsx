@@ -25,6 +25,26 @@ export default class App extends Component {
                 errors: undefined,
                 success: undefined,
                 layerName: undefined
+            },
+            outLayersDialog: {
+                open: true,
+                outLayers: [
+                    {
+                        name: 'primary',
+                        numberOfFeatures: 10,
+                        checked: false,
+                    },
+                    {
+                        name: 'secondary',
+                        numberOfFeatures: 20,
+                        checked: false,
+                    },
+                    {
+                        name: 'tertiary',
+                        numberOfFeatures: 30,
+                        checked: false,
+                    },
+                ]
             }
         }
         // globalURLS are predefined in index.html otherwise use the following defaults
@@ -296,6 +316,10 @@ export default class App extends Component {
             resultsDialog: {
                 ...this.state.resultsDialog,
                 handleClose: this.resultsDialogClose,
+            },
+            outLayersDialog: {
+                ...this.state.outLayersDialog,
+                inLayer: this.state.publishForm.selectedResource,
             }
         }
         return (
