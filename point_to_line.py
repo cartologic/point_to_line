@@ -54,5 +54,5 @@ def GetPGLayer( lyr_name ):
     # Close connection
     conn = None
 
-lyr_name = 'pharmacies'
-lyr = GetPGLayer(lyr_name)
+# lyr_name = 'pharmacies'
+# lyr = GetPGLayer(lyr_name)
