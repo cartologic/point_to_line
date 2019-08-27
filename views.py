@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -20,6 +21,49 @@ def index(request):
     return render(request, template_name="%s/index.html" % APP_NAME,
                   context={'message': 'Hello from %s' % APP_NAME, 'app_name': APP_NAME})
 
+@login_required
+def get_line_features(request):
+    if request.method == 'POST':
+        form = PointToLineForm(request.POST)
+        if form.is_valid():
+            # 1. Check clean form
+            # 2. Check table exist
+            in_layer_name = form.cleaned_data['in_layer_name']
+            out_layer_name = form.cleaned_data['out_layer_name']
+            sort_by_attr = form.cleaned_data['sort_by_attr']
+            group_by_attr = form.cleaned_data['group_by_attr']
+            if table_exist(out_layer_name):
+                json_response = {"status": False,
+                                 "message": "Layer Already Exists!, Try again with different layer name, If you don't see the existing layer in the layer list, Please contact the administrator", }
+                return JsonResponse(json_response, status=500)
+            # 3. Get current line features
+            connection_string = create_connection_string()
+            p = PointsToMultiPath(
+                connection_string,
+                in_layer_name,
+                out_layer_name,
+                sort_by_attr=sort_by_attr,
+                group_by_attr=group_by_attr,
+            )
+            p.start_connection()
+            p.get_in_layer()
+            features_dict = p.create_features_dict()
+            features_dict_res = [
+                {
+                    "name":key,
+                    "numberOfFeatures": len(value)
+                }
+                for key, value in features_dict.iteritems()
+            ]
+            p.close_connection()
+            json_response = {
+                'status': True,
+                'objects': features_dict_res
+            }
+            return JsonResponse(json_response, status=200)
+        json_response = {"status": False,
+                         "message": "Error while getting line features, Form is not valid!", }
+        return JsonResponse(json_response, status=500)
 
 @login_required
 def generate(request):
