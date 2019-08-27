@@ -48,9 +48,38 @@ const useStyles = makeStyles(theme => ({
     padding: "5px 10px",
   }
 }))
+const ErrorDialog = (props) => {
+  const classes = useStyles()
+  const {
+    errors,
+    open,
+    handleClose
+  } = props
+  return (
+    <Dialog
+      open={open}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+      fullWidth={false}
+      maxWidth={'md'}
+    >
+      <DialogTitle className={classes.dialogTitle}>Select Sub Lines</DialogTitle>
+      <DialogContent dividers>
+        <Typography gutterBottom color={'error'}>
+          {errors}
+        </Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Dismiss
+          </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
 const LayersSelectComponent = (props) => {
   const classes = useStyles()
-  const { outLayers, onChange } = props
+  const { outLayers, onChange, groupByValue } = props
   return (
     outLayers.map((layer, index) => (
       <div key={index} className={classes.selectItem}>
@@ -65,10 +94,10 @@ const LayersSelectComponent = (props) => {
 
         <div className={classes.layerDetails}>
           <Typography>
-            {layer.name}
+            {groupByValue}: {layer.name}
           </Typography>
-          <Typography>
-            Point Features Count: {layer.numberOfFeatures}
+          <Typography variant={'subtitle2'}>
+            Features Count: {layer.numberOfFeatures}
           </Typography>
         </div>
       </div>
@@ -83,44 +112,55 @@ export default (props) => {
     onCheck,
     inLayer,
     layerURL,
+    groupByValue,
+    errors,
   } = props
   const classes = useStyles()
   return (
     <div>
-      <Dialog
-        open={open}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        fullWidth={false}
-        maxWidth={'md'}
-      >
-        <DialogTitle className={classes.dialogTitle}>Select Sub Lines</DialogTitle>
-        <DialogContent>
-          <div className={classes.selectedLayer}>
-            <Avatar>
-              <LayerIcon />
-            </Avatar>
-            <Typography className={classes.layerDetails}>
-              Selected Point Layer: {inLayer && inLayer.name}
-              <br/>
-              The Selected input layer has the following sub lines as per the group by attribute
-              <br/>
-              Please Select the required lines to generate an output Line Layer
+      {
+        errors &&
+        <ErrorDialog
+          errors={errors}
+          open={open}
+          handleClose={handleClose}
+        />
+      }
+      {
+        !errors &&
+
+        <Dialog
+          open={open}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth={false}
+          maxWidth={'md'}
+        >
+          <DialogTitle className={classes.dialogTitle}>Select Sub Lines</DialogTitle>
+          <DialogContent>
+            <div className={classes.selectedLayer}>
+              <Avatar>
+                <LayerIcon />
+              </Avatar>
+              <Typography className={classes.layerDetails}>
+                Selected Point Layer: <strong>{inLayer && inLayer.name}</strong>
             </Typography>
-          </div>
-        </DialogContent>
-        <DialogContent dividers>
-          <LayersSelectComponent
-            onChange={onCheck}
-            outLayers={outLayers}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Confirm
+            </div>
+          </DialogContent>
+          <DialogContent dividers>
+            <LayersSelectComponent
+              onChange={onCheck}
+              outLayers={outLayers}
+              groupByValue={groupByValue}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Confirm
           </Button>
-        </DialogActions>
-      </Dialog>
+          </DialogActions>
+        </Dialog>
+      }
     </div>
   )
 }
