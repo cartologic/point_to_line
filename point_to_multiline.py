@@ -8,7 +8,7 @@ class PointsToMultiPath(object):
                  out_layer_name,
                  sort_by_attr,
                  group_by_attr,
-                 line_features_list=None
+                 line_features=None
                  ):
         self.in_layer_name = str(in_layer_name)
         self.out_layer_name = str(out_layer_name)
@@ -16,7 +16,7 @@ class PointsToMultiPath(object):
             sort_by_attr) if sort_by_attr is not None else None
         self.group_by_attr = str(
             group_by_attr) if group_by_attr is not None else None
-        self.line_features_list = line_features_list if line_features_list is not None else None
+        self.line_features = line_features if line_features is not None else None
         self.connection_string = connection_string
 
     def start_connection(self):
@@ -63,11 +63,11 @@ class PointsToMultiPath(object):
             features_dict['single_feature'] = [f for f in self.in_layer]
             return features_dict
         for f in self.in_layer:
-            line_name = f[self.group_by_index]
+            line_name = str(f[self.group_by_index])
             # If user selected some line features   
-            if self.line_features_list:
+            if self.line_features:
                 # if line feature in the selected line features
-                if line_name in self.line_features_list:
+                if line_name in self.line_features:
                     try:
                         # if the list of features
                         features_dict[line_name].append(f)
