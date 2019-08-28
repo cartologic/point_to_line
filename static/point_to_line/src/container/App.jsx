@@ -122,6 +122,7 @@ export default class App extends Component {
         )
     }
     onResourceSelect(resource) {
+        this.checkedLineFeatures = []
         this.setState({
             publishForm: {
                 ...this.state.publishForm,
