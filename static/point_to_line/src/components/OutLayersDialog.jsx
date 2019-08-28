@@ -85,7 +85,7 @@ const LayersSelectComponent = (props) => {
       <div key={index} className={classes.selectItem}>
         <FormControlLabel
           control={
-            <Checkbox checked={layer.checked} onChange={onChange} value={layer.name} />
+            <Checkbox onChange={onChange} value={layer.name} />
           }
         />
         <Avatar>
@@ -144,7 +144,7 @@ export default (props) => {
               </Avatar>
               <Typography className={classes.layerDetails}>
                 Selected Point Layer: <strong>{inLayer && inLayer.name}</strong>
-            </Typography>
+              </Typography>
             </div>
           </DialogContent>
           <DialogContent dividers>
