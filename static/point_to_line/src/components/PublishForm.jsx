@@ -17,6 +17,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,6 +51,10 @@ const useStyles = makeStyles(theme => ({
   },
   progress: {
     margin: '5px',
+  },
+  title:{
+    margin: '8px',
+    color: '#616161',
   },
 }));
 
@@ -113,6 +118,7 @@ export default function OutlinedInputAdornments(props) {
   } = props
   return (
     <div className={classes.root}>
+      <Typography variant="subtitle1"className={classes.title}>Create Line Layer</Typography>      
       <TextField
         error={errors && errors.inLayerName}
         className={clsx(classes.margin, classes.textField)}

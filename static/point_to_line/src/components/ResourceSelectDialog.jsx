@@ -24,7 +24,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   dialogTitle: {
-    flexGrow: 1
+    flexGrow: 1,
+    minWidth:  '600px',
   },
   searchInput: {
     width: "100%",
@@ -53,11 +54,11 @@ export default (props) => {
         open={open}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        fullWidth={true}
-        maxWidth={'xl'}
+        fullWidth={false}
+        maxWidth={'md'}
         onClose={handleClose}
       >
-        <DialogTitle>Select Point Layer</DialogTitle>
+        <DialogTitle className={classes.dialogTitle}>Select Point Layer</DialogTitle>
         <DialogContent>
           <div className={classes.searchArea}>
             {
