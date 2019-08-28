@@ -21,6 +21,7 @@ def index(request):
     return render(request, template_name="%s/index.html" % APP_NAME,
                   context={'message': 'Hello from %s' % APP_NAME, 'app_name': APP_NAME})
 
+
 @login_required
 def get_line_features(request):
     if request.method == 'POST':
@@ -50,7 +51,7 @@ def get_line_features(request):
             features_dict = p.create_features_dict()
             features_dict_res = [
                 {
-                    "name":key,
+                    "name": key,
                     "numberOfFeatures": len(value)
                 }
                 for key, value in features_dict.iteritems()
@@ -65,6 +66,7 @@ def get_line_features(request):
                          "message": "Error while getting line features, Form is not valid!", }
         return JsonResponse(json_response, status=500)
 
+
 @login_required
 def generate(request):
     warnings = ''
@@ -77,6 +79,7 @@ def generate(request):
             out_layer_name = form.cleaned_data['out_layer_name']
             sort_by_attr = form.cleaned_data['sort_by_attr']
             group_by_attr = form.cleaned_data['group_by_attr']
+            line_features = [str(f) for f in json.loads(request.POST['line_features'])]
             if table_exist(out_layer_name):
                 json_response = {"status": False,
                                  "message": "Layer Already Exists!, Try again with different layer name, If you don't see the existing layer in the layer list, Please contact the administrator", }
@@ -89,6 +92,7 @@ def generate(request):
                 out_layer_name,
                 sort_by_attr=sort_by_attr,
                 group_by_attr=group_by_attr,
+                line_features=line_features,
             )
             try:
                 p.start_connection()
