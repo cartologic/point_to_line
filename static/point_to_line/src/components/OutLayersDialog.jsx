@@ -16,6 +16,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import LayerIcon from '@material-ui/icons/Layers';
+import Adjust from '@material-ui/icons/Adjust';
 import TextField from '@material-ui/core/TextField';
 import moment from 'moment'
 import Typography from '@material-ui/core/Typography';
@@ -25,6 +26,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
     minWidth: "600px",
+  },
+  selectedLayerArea :{
+    minHeight : 'max-content',
   },
   selectItem: {
     display: "flex",
@@ -88,16 +92,16 @@ const LayersSelectComponent = (props) => {
             <Checkbox onChange={onChange} value={layer.name} />
           }
         />
-        <Avatar>
-          <LayerIcon />
-        </Avatar>
+
+          <Adjust />
+
 
         <div className={classes.layerDetails}>
           <Typography>
             {groupByValue}: {layer.name}
           </Typography>
-          <Typography variant={'subtitle2'}>
-            Features Count: {layer.numberOfFeatures}
+          <Typography variant={'subtitle2'} color={'textSecondary'}>
+            Point features count: {layer.numberOfFeatures}
           </Typography>
         </div>
       </div>
@@ -135,9 +139,10 @@ export default (props) => {
           aria-describedby="alert-dialog-description"
           fullWidth={false}
           maxWidth={'md'}
+          onClose={handleClose}
         >
           <DialogTitle className={classes.dialogTitle}>Select Sub Lines</DialogTitle>
-          <DialogContent>
+          <DialogContent className={classes.selectedLayerArea}>
             <div className={classes.selectedLayer}>
               <Avatar>
                 <LayerIcon />
@@ -156,7 +161,7 @@ export default (props) => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
-              Confirm
+              OK
           </Button>
           </DialogActions>
         </Dialog>
