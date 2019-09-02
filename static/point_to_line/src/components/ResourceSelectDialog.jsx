@@ -26,6 +26,8 @@ const useStyles = makeStyles(theme => ({
   dialogTitle: {
     flexGrow: 1,
     minWidth:  '600px',
+    display: 'flex',
+    flexDirection: 'row',
   },
   searchInput: {
     width: "100%",
@@ -38,6 +40,9 @@ const useStyles = makeStyles(theme => ({
     border: '2px solid darkgrey',
     borderRadius: '5px'
   },
+  progress:{
+    marginLeft: '50px',
+  }
 }))
 export default (props) => {
   const {
@@ -45,9 +50,11 @@ export default (props) => {
     handleClose,
     resources,
     onResourceSelect,
-    selectedResource
+    selectedResource,
+    loading,
   } = props
   const classes = useStyles()
+  debugger
   return (
     <div>
       <Dialog
@@ -58,7 +65,13 @@ export default (props) => {
         maxWidth={'md'}
         onClose={handleClose}
       >
-        <DialogTitle className={classes.dialogTitle}>Select Point Layer</DialogTitle>
+        <DialogTitle className={classes.dialogTitle}>
+          Select Point Layer
+          {
+            loading &&
+            <CircularProgress className={classes.progress} size={15} />
+          }
+        </DialogTitle>
         <DialogContent>
           <div className={classes.searchArea}>
             {

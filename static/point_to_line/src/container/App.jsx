@@ -411,6 +411,7 @@ export default class App extends Component {
                 handleClose: this.resourceSelectDialogClose,
                 onResourceSelect: this.onResourceSelect,
                 selectedResource: this.state.publishForm.selectedResource,
+                loading: this.state.loading,
             },
             publishForm: {
                 ...this.state.publishForm,
