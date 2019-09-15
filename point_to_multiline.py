@@ -119,6 +119,9 @@ class PointsToMultiPath(object):
             self.out_layer.StartTransaction()
             self.out_layer.CreateFeature(feature)
             self.out_layer.CommitTransaction()
+    
+    def delete_layer(self, layer_name):
+        self.conn.DeleteLayer(layer_name)
 
     def close_connection(self):
         self.conn = None
