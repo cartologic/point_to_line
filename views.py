@@ -104,7 +104,10 @@ def generate(request):
                 p.execute()
                 p.close_connection()
             except Exception as e:
-                # TODO: roll back delete layer(table) from database if created!
+                # roll back and delete table if exist
+                p.start_connection()
+                p.delete_layer(str(out_layer_name))
+                p.close_connection()
                 ogr_error = 'Error while creating Line Layer: {}'.format(e)
                 json_response = {"status": False,
                                  "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator \n\n ogr_error:{}".format(ogr_error), }
@@ -113,7 +116,10 @@ def generate(request):
             try:
                 publish_in_geoserver(out_layer_name)
             except:
-                # TODO: roll back the database table here!
+                # roll back and delete table if exist
+                p.start_connection()
+                p.delete_layer(str(out_layer_name))
+                p.close_connection()
                 json_response = {
                     "status": False, "message": "Could not publish to GeoServer, Try again or contact the administrator", 'warnings': warnings}
                 return JsonResponse(json_response, status=500)
@@ -122,7 +128,10 @@ def generate(request):
             try:
                 layer = publish_in_geonode(out_layer_name, owner=request.user)
             except:
-                # TODO: roll back the delete geoserver record and db name
+                # roll back and delete table if exist
+                p.start_connection()
+                p.delete_layer(str(out_layer_name))
+                p.close_connection()
                 json_response = {
                     "status": False, "message": "Could not publish in GeoNode, Try again or contact the administrator", 'warnings': warnings}
                 return JsonResponse(json_response, status=500)
