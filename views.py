@@ -79,7 +79,8 @@ def generate(request):
             out_layer_name = form.cleaned_data['out_layer_name']
             sort_by_attr = form.cleaned_data['sort_by_attr']
             group_by_attr = form.cleaned_data['group_by_attr']
-            line_features = [str(f) for f in json.loads(request.POST['line_features'])]
+            line_features = request.POST.get('line_features')
+            line_features = [str(f) for f in json.loads(line_features)] if line_features else []
             if table_exist(out_layer_name):
                 json_response = {"status": False,
                                  "message": "Layer Already Exists!, Try again with different layer name, If you don't see the existing layer in the layer list, Please contact the administrator", }
