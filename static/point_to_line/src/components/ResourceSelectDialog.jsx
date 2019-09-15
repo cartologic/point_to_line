@@ -54,7 +54,6 @@ export default (props) => {
     loading,
   } = props
   const classes = useStyles()
-  debugger
   return (
     <div>
       <Dialog
