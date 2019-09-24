@@ -126,7 +126,6 @@ export default class App extends Component {
         )
     }
     onResourceSelect(resource) {
-        this.checkedLineFeatures = []
         this.setState({
             publishForm: {
                 ...this.state.publishForm,
@@ -135,6 +134,10 @@ export default class App extends Component {
             resourceSelectDialog: {
                 ...this.state.resourceSelectDialog,
                 open: false
+            },
+            outLayersDialog:{
+                ...this.state.outLayersDialog,
+                outLayers: [],
             },
             loading: true
         },
