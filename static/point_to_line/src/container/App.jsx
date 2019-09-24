@@ -412,7 +412,10 @@ export default class App extends Component {
             this.setState({
                 outLayersDialog: {
                     ...this.state.outLayersDialog,
-                    outLayers: outLayers.map(l=>{return {...l, checked: true}})
+                    outLayers: outLayers.map(l=>{
+                        if (l.numberOfFeatures > 1) return {...l, checked: true}
+                        return l
+                    })
                 }
             })
         }

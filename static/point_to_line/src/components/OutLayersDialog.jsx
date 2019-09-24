@@ -93,7 +93,7 @@ const LayersSelectComponent = (props) => {
       <div key={index} className={classes.selectItem}>
         <FormControlLabel
           control={
-            <Checkbox onChange={onChange} value={layer.name} checked={layer.checked}/>
+            <Checkbox onChange={onChange} value={layer.name} checked={layer.checked} disabled={layer.numberOfFeatures<2}/>
           }
         />
         <Adjust />
@@ -101,7 +101,7 @@ const LayersSelectComponent = (props) => {
           <Typography>
             {groupByValue}: {layer.name}
           </Typography>
-          <Typography variant={'subtitle2'} color={'textSecondary'}>
+          <Typography variant={'subtitle2'} color={layer.numberOfFeatures > 1 ? 'textSecondary' : 'error'}>
             Point features count: {layer.numberOfFeatures}
           </Typography>
         </div>
@@ -164,6 +164,9 @@ export default (props) => {
               <div className={classes.layerDetails}>
                 <Typography>
                   Select All
+                </Typography>
+                <Typography color={'warning'} variant={'subtitle2'}>
+                  Please note: The line features with more the one point feature count can be selected
                 </Typography>
               </div>
             </div>
