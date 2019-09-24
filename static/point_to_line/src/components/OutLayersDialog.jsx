@@ -40,7 +40,10 @@ const useStyles = makeStyles(theme => ({
   layerDetails: {
     display: 'flex',
     flexDirection: 'column',
-    margin: '5px 20px'
+    margin: '5px 20px',
+  },
+  selectAllContent: {
+    minHeight: 'max-content',
   },
   selectedLayer: {
     border: "1px solid lightgrey",
@@ -151,7 +154,7 @@ export default (props) => {
               </Typography>
             </div>
           </DialogContent>
-          <DialogContent dividers>
+          <DialogContent dividers className={classes.selectAllContent}>
             <div className={classes.selectItem}>
               <FormControlLabel
                 control={
