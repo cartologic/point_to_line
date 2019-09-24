@@ -27,8 +27,8 @@ const useStyles = makeStyles(theme => ({
   dialogTitle: {
     minWidth: "600px",
   },
-  selectedLayerArea :{
-    minHeight : 'max-content',
+  selectedLayerArea: {
+    minHeight: 'max-content',
   },
   selectItem: {
     display: "flex",
@@ -89,13 +89,10 @@ const LayersSelectComponent = (props) => {
       <div key={index} className={classes.selectItem}>
         <FormControlLabel
           control={
-            <Checkbox onChange={onChange} value={layer.name} />
+            <Checkbox onChange={onChange} value={layer.name} checked={layer.checked}/>
           }
         />
-
-          <Adjust />
-
-
+        <Adjust />
         <div className={classes.layerDetails}>
           <Typography>
             {groupByValue}: {layer.name}

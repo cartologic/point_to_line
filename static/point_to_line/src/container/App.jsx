@@ -237,7 +237,7 @@ export default class App extends Component {
                         open: true,
                         errors: undefined,
                         success: jsonResponse.message,
-                        outLayers: jsonResponse.objects
+                        outLayers: jsonResponse.objects.map(l=>{return{...l, checked: false}})
                     }
                 })
             })
@@ -398,13 +398,22 @@ export default class App extends Component {
         }
     }
     onOutLayerCheck(e) {
-        let lineNames = [...this.checkedLineFeatures]
-        if (e.target.checked) {
-            lineNames = [...lineNames, e.target.value]
-        } else {
-            lineNames.splice(lineNames.indexOf(e.target.value), 1)
-        }
-        this.checkedLineFeatures = [...lineNames]
+        let layers = [...this.state.outLayersDialog.outLayers]
+        layers = layers.map(l=>{
+            if(l.name === e.target.value) {
+                l = {
+                    ...l,
+                    checked: e.target.checked
+                }
+            }
+            return l
+        })
+        this.setState({
+            outLayersDialog:{
+                ...this.state.outLayersDialog,
+                outLayers: layers
+            }
+        })
     }
     onSearchChange(e){
         this.setState({
