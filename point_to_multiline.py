@@ -17,6 +17,7 @@ class PointsToMultiPath(object):
         self.group_by_attr = str(
             group_by_attr) if group_by_attr is not None else None
         self.line_features = line_features if line_features is not None else None
+        self.new_out_field_name = 'ogc_line_name'
         self.connection_string = connection_string
 
     def start_connection(self):
@@ -26,6 +27,7 @@ class PointsToMultiPath(object):
         self.get_in_layer()
 
         self.create_out_layer()
+        self.create_out_features_field()
         self.features_dict = self.create_features_dict()
         self.out_features = self.create_out_features()
 
@@ -50,6 +52,12 @@ class PointsToMultiPath(object):
         )
         self.out_layer = self.conn.GetLayer(self.out_layer_name)
         self.out_featureDefn = self.out_layer.GetLayerDefn()
+
+    def create_out_features_field(self):
+        field_defn = ogr.FieldDefn(self.new_out_field_name, ogr.OFTString)
+        self.out_layer.StartTransaction()
+        self.out_layer.CreateField(field_defn)
+        self.out_layer.CommitTransaction()
 
     def get_field_index(self, attr):
         for i in range(self.in_layerDefn.GetFieldCount()):
@@ -109,6 +117,9 @@ class PointsToMultiPath(object):
 
             # Set Feature Geometry
             out_feature.SetGeometry(line)
+            
+            # Set field [line_name] with value key of the features dict
+            out_feature.SetField(self.new_out_field_name, key)
 
             out_features.append(out_feature)
         return out_features
