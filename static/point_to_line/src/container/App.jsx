@@ -172,7 +172,12 @@ export default class App extends Component {
     }
     publishChange(e) {
         if (e.target.name === "groupByValue" && e.target.value !== this.state.publishForm["groupByValue"]) {
-            this.checkedLineFeatures = []
+            this.setState({
+                outLayersDialog: {
+                    ...this.state.outLayersDialog,
+                    outLayers: []
+                }
+            })
         }
         this.setState({
             publishForm: {
