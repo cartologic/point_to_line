@@ -321,7 +321,7 @@ export default class App extends Component {
             groupByValue,
             outLayerName,
         } = this.state.publishForm
-        const checkedLineFeatures = this.checkedLineFeatures
+        const checkedLineFeatures = this.state.outLayersDialog.outLayers.filter(l=>l.checked).map(l=>l.name)
         const inLayerName = selectedResource && selectedResource.name
         const errors = this.validateFormData({
             inLayerName,
