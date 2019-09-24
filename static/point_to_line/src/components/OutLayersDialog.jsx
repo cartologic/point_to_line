@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     margin: '15px 0',
     alignItems: 'center',
+    minHeight: 'max-content',
   },
   layerDetails: {
     display: 'flex',
@@ -115,6 +116,7 @@ export default (props) => {
     layerURL,
     groupByValue,
     errors,
+    onCheckAll
   } = props
   const classes = useStyles()
   return (
@@ -147,6 +149,20 @@ export default (props) => {
               <Typography className={classes.layerDetails}>
                 Selected Point Layer: <strong>{inLayer && inLayer.name}</strong>
               </Typography>
+            </div>
+          </DialogContent>
+          <DialogContent dividers>
+            <div className={classes.selectItem}>
+              <FormControlLabel
+                control={
+                  <Checkbox onChange={onCheckAll} />
+                }
+              />
+              <div className={classes.layerDetails}>
+                <Typography>
+                  Select All
+                </Typography>
+              </div>
             </div>
           </DialogContent>
           <DialogContent dividers>

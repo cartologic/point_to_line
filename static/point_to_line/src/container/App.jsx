@@ -47,6 +47,7 @@ export default class App extends Component {
         this.getLayerAttributes = this.getLayerAttributes.bind(this)
         this.publishChange = this.publishChange.bind(this)
         this.onOutLayerCheck = this.onOutLayerCheck.bind(this)
+        this.onOutLayerCheckAll = this.onOutLayerCheckAll.bind(this)
         this.apply = this.apply.bind(this)
     }
     resourceSelectDialogClose() {
@@ -397,6 +398,25 @@ export default class App extends Component {
             }
         }
     }
+    onOutLayerCheckAll(e){
+        const outLayers = this.state.outLayersDialog.outLayers
+        if (e.target.checked){
+            this.setState({
+                outLayersDialog: {
+                    ...this.state.outLayersDialog,
+                    outLayers: outLayers.map(l=>{return {...l, checked: true}})
+                }
+            })
+        }
+        else {
+            this.setState({
+                outLayersDialog: {
+                    ...this.state.outLayersDialog,
+                    outLayers: outLayers.map(l=>{return {...l, checked: false}})
+                }
+            })
+        }
+    }
     onOutLayerCheck(e) {
         let layers = [...this.state.outLayersDialog.outLayers]
         layers = layers.map(l=>{
@@ -454,7 +474,8 @@ export default class App extends Component {
                 inLayer: this.state.publishForm.selectedResource,
                 groupByValue: this.state.publishForm.groupByValue,
                 handleClose: this.outLayersDialogClose,
-                onCheck: this.onOutLayerCheck
+                onCheck: this.onOutLayerCheck,
+                onCheckAll: this.onOutLayerCheckAll,
             }
         }
         return (
