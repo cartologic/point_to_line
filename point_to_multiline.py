@@ -1,4 +1,5 @@
 from osgeo import ogr, osr
+import re
 
 
 class PointsToMultiPath(object):
@@ -101,11 +102,16 @@ class PointsToMultiPath(object):
         # Lines Creation Process:
         out_features = []
         for i, key in enumerate(self.features_dict, start=1):
-            # sort features by sort attr inside the dict:
             sorted_features = self.features_dict[key]
+            
+            # human / natural sorting features by sort attr inside the dict:
             if self.sort_by_index is not None:
-                sorted_features.sort(key=lambda f: f[self.sort_by_index])
-
+                convert = lambda text: int(text) if text.isdigit() else text.lower()
+                alphanum_key = lambda key: [ 
+                    convert(s) for s in re.split('([0-9]+)', key[self.sort_by_index]) 
+                    ]
+                sorted_features = sorted(sorted_features, key = alphanum_key)
+            
             # create a new line geometry
             line = ogr.Geometry(ogr.wkbLineString)
             for feat in sorted_features:
