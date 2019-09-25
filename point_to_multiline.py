@@ -73,7 +73,7 @@ class PointsToMultiPath(object):
             return features_dict
         for f in self.in_layer:
             line_name = str(f[self.group_by_index])
-            # If user selected some line features   
+            # If user selected some line features
             if self.line_features:
                 # if line feature in the selected line features
                 if line_name in self.line_features:
@@ -102,16 +102,42 @@ class PointsToMultiPath(object):
         # Lines Creation Process:
         out_features = []
         for i, key in enumerate(self.features_dict, start=1):
-            sorted_features = self.features_dict[key]
+            features = self.features_dict[key]
             
+            # remove all duplicate features in case of sort by, Please look at Ex:
+            # Ex: [a, a, b, c, d] => unique = [b, c, d], duplicates = [a, a]
+            if self.sort_by_index is not None:
+                unique_features = []
+                duplicate_features = []
+                for f in features:
+                    # get index of feature in unique features
+                    feature_index_in_unique = -1
+                    for i, u in enumerate(unique_features):
+                        if f[self.sort_by_index] == u[self.sort_by_index]: 
+                            feature_index_in_unique = i
+                    # if feature exist in unique_features
+                    if feature_index_in_unique != -1:
+                        # 1. Add current featute to duplicates
+                        duplicate_features.append(f)
+                        # 2. move feature from unique to duplicates
+                        duplicate_features.append(u)
+                        # 3. remove it from unique
+                        del unique_features[feature_index_in_unique]
+                    else:
+                        # append feature to unique features
+                        unique_features.append(f)
+                features = unique_features
+                
             # human / natural sorting features by sort attr inside the dict:
             if self.sort_by_index is not None:
-                convert = lambda text: int(text) if text.isdigit() else text.lower()
-                alphanum_key = lambda key: [ 
-                    convert(s) for s in re.split('([0-9]+)', key[self.sort_by_index]) 
-                    ]
-                sorted_features = sorted(sorted_features, key = alphanum_key)
-            
+                def convert(text): return int(
+                    text) if text.isdigit() else text.lower()
+
+                def alphanum_key(key): return [
+                    convert(s) for s in re.split('([0-9]+)', key[self.sort_by_index])
+                ]
+                sorted_features = sorted(features, key=alphanum_key)
+
             # create a new line geometry
             line = ogr.Geometry(ogr.wkbLineString)
             for feat in sorted_features:
@@ -123,7 +149,7 @@ class PointsToMultiPath(object):
 
             # Set Feature Geometry
             out_feature.SetGeometry(line)
-            
+
             # Set field [line_name] with value key of the features dict
             out_feature.SetField(self.new_out_field_name, key)
 
@@ -136,7 +162,7 @@ class PointsToMultiPath(object):
             self.out_layer.StartTransaction()
             self.out_layer.CreateFeature(feature)
             self.out_layer.CommitTransaction()
-    
+
     def delete_layer(self, layer_name):
         self.conn.DeleteLayer(layer_name)
 
