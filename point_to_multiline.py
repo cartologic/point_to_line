@@ -139,6 +139,7 @@ class PointsToMultiPath(object):
                 ]
                 sorted_features = sorted(features, key=alphanum_key)
 
+            sorted_features = features
             # create a new line geometry
             line = ogr.Geometry(ogr.wkbLineString)
             for feat in sorted_features:
