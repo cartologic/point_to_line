@@ -115,6 +115,7 @@ class PointsToMultiPath(object):
                     for i, u in enumerate(unique_features):
                         if f[self.sort_by_index] == u[self.sort_by_index]: 
                             feature_index_in_unique = i
+                            break
                     # if feature exist in unique_features
                     if feature_index_in_unique != -1:
                         # 1. Add current featute to duplicates
