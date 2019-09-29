@@ -13,6 +13,13 @@ export default class App extends Component {
                 resources: [],
                 searchValue: '',
             },
+            step0: {
+                selectedResource: undefined,
+                attributes: [],
+                sortByValue: '',
+                groupByValue: '',
+                errors: {},
+            },
             publishForm: {
                 selectedResource: undefined,
                 attributes: [],
@@ -44,6 +51,7 @@ export default class App extends Component {
         this.outLayersDialogClose = this.outLayersDialogClose.bind(this)
         this.resultsDialogOpen = this.resultsDialogOpen.bind(this)
         this.onResourceSelect = this.onResourceSelect.bind(this)
+        this.validateSelectedResource = this.validateSelectedResource.bind(this)
         this.getLayerAttributes = this.getLayerAttributes.bind(this)
         this.publishChange = this.publishChange.bind(this)
         this.onOutLayerCheck = this.onOutLayerCheck.bind(this)
@@ -90,6 +98,16 @@ export default class App extends Component {
             }
         })
     }
+
+    validateSelectedResource(valid){
+        this.setState({
+            step0:{
+                ...this.state.step0,
+                error: valid
+            }
+        })
+    }
+
     fetchResources() {
         const params = {
             'geom_type': 'point',
@@ -127,9 +145,10 @@ export default class App extends Component {
     }
     onResourceSelect(resource) {
         this.setState({
-            publishForm: {
-                ...this.state.publishForm,
-                selectedResource: resource
+            step0: {
+                ...this.state.step0,
+                selectedResource: resource,
+                error: false,
             },
             resourceSelectDialog: {
                 ...this.state.resourceSelectDialog,
@@ -147,7 +166,7 @@ export default class App extends Component {
         )
     }
     getLayerAttributes() {
-        const layer = this.state.publishForm.selectedResource
+        const layer = this.state.step0.selectedResource
         const params = {
             'layer__id': layer.id
         }
@@ -162,8 +181,8 @@ export default class App extends Component {
             return response.json()
         }).then(data => {
             this.setState({
-                publishForm: {
-                    ...this.state.publishForm,
+                step0: {
+                    ...this.state.step0,
                     attributes: data.objects,
                 },
                 loading: false
@@ -180,8 +199,8 @@ export default class App extends Component {
             })
         }
         this.setState({
-            publishForm: {
-                ...this.state.publishForm,
+            step0: {
+                ...this.state.step0,
                 [e.target.name]: e.target.value,
             }
         })
@@ -464,6 +483,15 @@ export default class App extends Component {
                 selectedResource: this.state.publishForm.selectedResource,
                 loading: this.state.loading,
                 onSearchChange: this.onSearchChange
+            },
+            step0: {
+                ...this.state.step0,
+                resourceSelectDialogOpen: this.resourceSelectDialogOpen,
+                sortByChange: this.publishChange,
+                sortByFilter,
+                groupByChange: this.publishChange,
+                groupByFilter,
+                validateSelectedResource: this.validateSelectedResource,
             },
             publishForm: {
                 ...this.state.publishForm,

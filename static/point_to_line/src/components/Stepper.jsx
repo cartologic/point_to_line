@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PublishForm from "./steps/PublishForm";
+import Step0 from "./steps/Step0";
 export default class Stepper extends Component {
     constructor (props) {
         super(props)
@@ -21,13 +22,13 @@ export default class Stepper extends Component {
     }
     render () {
         const {
-            publishForm
+            step0
         } = this.props
         const steps = [
             {
-                component: PublishForm,
+                component: Step0,
                 props: {
-                    ...publishForm,
+                    ...step0,
                     next: this.next,
                 }
             },

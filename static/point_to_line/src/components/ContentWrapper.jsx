@@ -15,13 +15,16 @@ const useStyles = makeStyles(theme => ({
 }));
 export default (props) => {
   const classes = useStyles();
+  const {
+    step0
+  } = props
   return (
     <div>
       <CssBaseline />
       <Container maxWidth="md">
         <Paper className={classes.root}>
           <Stepper
-            publishForm={{...props.publishForm}} 
+            step0={{...step0}} 
           />
           <ResourceSelectDialog {...props.resourceSelectProps} />
           <ResultsDialog {...props.resultsDialog} />
