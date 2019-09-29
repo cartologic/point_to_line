@@ -40,15 +40,26 @@ def get_line_features(request):
         p.start_connection()
         p.get_in_layer()
         features_dict = p.create_features_dict()
-        duplicates_dict = p.get_duplicated_features()
-        features_dict_res = [
-            {
-                "name": key,
-                "numberOfFeatures": len(value),
-                "duplicated_features": duplicates_dict[key]['duplicate']
-            }
-            for key, value in features_dict.iteritems()
-        ]
+        if sort_by_attr:
+            duplicates_dict = p.get_duplicated_features()
+            features_dict_res = [
+                {
+                    "name": key,
+                    "numberOfFeatures": len(value),
+                    "duplicated_features": duplicates_dict[key]['duplicate']
+                }
+                for key, value in features_dict.iteritems()
+            ]
+        else:
+            duplicates_dict = p.get_duplicated_features()
+            features_dict_res = [
+                {
+                    "name": key,
+                    "numberOfFeatures": len(value),
+                    "duplicated_features": []
+                }
+                for key, value in features_dict.iteritems()
+            ]
         p.close_connection()
         json_response = {
             'status': True,
