@@ -70,6 +70,7 @@ class PointsToMultiPath(object):
         # consider all point features in one line feature if not (group by)
         if self.group_by_index is None:
             features_dict['single_feature'] = [f for f in self.in_layer]
+            self.features_dict = features_dict
             return features_dict
         for f in self.in_layer:
             line_name = str(f[self.group_by_index])
