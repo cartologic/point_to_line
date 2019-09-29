@@ -16,7 +16,8 @@ const useStyles = makeStyles(theme => ({
 export default (props) => {
   const classes = useStyles();
   const {
-    step0
+    step0,
+    step1,
   } = props
   return (
     <div>
@@ -24,7 +25,8 @@ export default (props) => {
       <Container maxWidth="md">
         <Paper className={classes.root}>
           <Stepper
-            step0={{...step0}} 
+            step0={{...step0}}
+            step1={{...step1}}
           />
           <ResourceSelectDialog {...props.resourceSelectProps} />
           <ResultsDialog {...props.resultsDialog} />

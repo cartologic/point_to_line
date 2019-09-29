@@ -20,6 +20,9 @@ export default class App extends Component {
                 groupByValue: '',
                 errors: {},
             },
+            step1: {
+                outLayers: [],
+            },
             publishForm: {
                 selectedResource: undefined,
                 attributes: [],
@@ -109,7 +112,7 @@ export default class App extends Component {
         })
     }
 
-    getLineFeatures(){
+    async getLineFeatures(){
         this.setState({loading: true})
         const {
             groupByValue,
@@ -125,11 +128,25 @@ export default class App extends Component {
         if (groupByValue && groupByValue.length > 0)
             form.append('group_by_attr', groupByValue)
         form.append('csrfmiddlewaretoken', getCRSFToken())
-        fetch(this.urls.getLineFeatures, {
+        const res = await fetch(this.urls.getLineFeatures, {
             method: 'POST',
             body: form,
             credentials: 'same-origin',
         })
+        if (res.status == 200) {
+            const data = await res.json()
+            this.setState({
+                loading: false,
+                step1: {
+                    ...this.state.step1,
+                    outLayers: data.objects.map(l=>{return{...l, checked: false}}),
+                }
+            })
+
+        }
+        if (res.status == 500) {
+            console.log(res.message)
+        }
     }
 
     fetchResources() {
@@ -178,8 +195,8 @@ export default class App extends Component {
                 ...this.state.resourceSelectDialog,
                 open: false
             },
-            outLayersDialog:{
-                ...this.state.outLayersDialog,
+            step1:{
+                ...this.state.step1,
                 outLayers: [],
             },
             loading: true
@@ -214,18 +231,14 @@ export default class App extends Component {
         })
     }
     publishChange(e) {
-        if (e.target.name === "groupByValue" && e.target.value !== this.state.publishForm["groupByValue"]) {
-            this.setState({
-                outLayersDialog: {
-                    ...this.state.outLayersDialog,
-                    outLayers: []
-                }
-            })
-        }
         this.setState({
             step0: {
                 ...this.state.step0,
                 [e.target.name]: e.target.value,
+            },
+            step1: {
+                ...this.state.step1,
+                outLayers: []
             }
         })
     }
@@ -450,11 +463,11 @@ export default class App extends Component {
         }
     }
     onOutLayerCheckAll(e){
-        const outLayers = this.state.outLayersDialog.outLayers
+        const outLayers = this.state.step1.outLayers
         if (e.target.checked){
             this.setState({
-                outLayersDialog: {
-                    ...this.state.outLayersDialog,
+                step1: {
+                    ...this.state.step1,
                     outLayers: outLayers.map(l=>{
                         if (l.numberOfFeatures > 1) return {...l, checked: true}
                         return l
@@ -464,15 +477,15 @@ export default class App extends Component {
         }
         else {
             this.setState({
-                outLayersDialog: {
-                    ...this.state.outLayersDialog,
+                step1: {
+                    ...this.state.step1,
                     outLayers: outLayers.map(l=>{return {...l, checked: false}})
                 }
             })
         }
     }
     onOutLayerCheck(e) {
-        let layers = [...this.state.outLayersDialog.outLayers]
+        let layers = [...this.state.step1.outLayers]
         layers = layers.map(l=>{
             if(l.name === e.target.value) {
                 l = {
@@ -483,8 +496,8 @@ export default class App extends Component {
             return l
         })
         this.setState({
-            outLayersDialog:{
-                ...this.state.outLayersDialog,
+            step1:{
+                ...this.state.step1,
                 outLayers: layers
             }
         })
@@ -517,6 +530,13 @@ export default class App extends Component {
                 groupByFilter,
                 validateSelectedResource: this.validateSelectedResource,
                 getLineFeatures: this.getLineFeatures,
+            },
+            step1: {
+                ...this.state.step1,
+                inLayer: this.state.step0.selectedResource,
+                groupByValue: this.state.step0.groupByValue,
+                onCheck: this.onOutLayerCheck,
+                onCheckAll: this.onOutLayerCheckAll,
             },
             publishForm: {
                 ...this.state.publishForm,
