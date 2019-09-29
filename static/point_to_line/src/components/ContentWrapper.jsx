@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import PublishForm from './PublishForm'
+import Stepper from "./Stepper";
 import ResourceSelectDialog from './ResourceSelectDialog'
 import ResultsDialog from './ResultsDialog'
 import OutLayersDialog from './OutLayersDialog'
@@ -20,7 +20,9 @@ export default (props) => {
       <CssBaseline />
       <Container maxWidth="md">
         <Paper className={classes.root}>
-          <PublishForm {...props.publishForm} />
+          <Stepper
+            publishForm={{...props.publishForm}} 
+          />
           <ResourceSelectDialog {...props.resourceSelectProps} />
           <ResultsDialog {...props.resultsDialog} />
           <OutLayersDialog {...props.outLayersDialog} />
