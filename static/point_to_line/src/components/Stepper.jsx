@@ -8,11 +8,17 @@ export default class Stepper extends Component {
             current: 0,
         }
         this.next = this.next.bind(this)
+        this.skip = this.skip.bind(this)
         this.previous = this.previous.bind(this)
     }
     next(){
         this.setState({
             current: this.state.current + 1
+        })
+    }
+    skip(){
+        this.setState({
+            current: this.state.current + 2
         })
     }
     previous(){
@@ -30,7 +36,8 @@ export default class Stepper extends Component {
                 props: {
                     ...step0,
                     next: this.next,
-                }
+                    skip: this.skip,
+                },
             },
         ]
         const step = steps[this.state.current]
