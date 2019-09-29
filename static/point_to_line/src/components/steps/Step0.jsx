@@ -128,7 +128,7 @@ export default function OutlinedInputAdornments(props) {
     else{
       if (groupByValue.length == 0 && sortByValue.length == 0) skip()
       else {
-        // next()
+        next()
         getLineFeatures()
       }
     }
