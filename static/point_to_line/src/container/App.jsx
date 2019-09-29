@@ -52,6 +52,7 @@ export default class App extends Component {
         this.resultsDialogOpen = this.resultsDialogOpen.bind(this)
         this.onResourceSelect = this.onResourceSelect.bind(this)
         this.validateSelectedResource = this.validateSelectedResource.bind(this)
+        this.getLineFeatures = this.getLineFeatures.bind(this)
         this.getLayerAttributes = this.getLayerAttributes.bind(this)
         this.publishChange = this.publishChange.bind(this)
         this.onOutLayerCheck = this.onOutLayerCheck.bind(this)
@@ -105,6 +106,29 @@ export default class App extends Component {
                 ...this.state.step0,
                 error: valid
             }
+        })
+    }
+
+    getLineFeatures(){
+        this.setState({loading: true})
+        const {
+            groupByValue,
+            sortByValue,
+            selectedResource
+        } = this.state.step0
+        const inLayerName = selectedResource.name
+        
+        let form = new FormData();
+        form.append('in_layer_name', inLayerName)
+        if (sortByValue && sortByValue.length > 0)
+            form.append('sort_by_attr', sortByValue)
+        if (groupByValue && groupByValue.length > 0)
+            form.append('group_by_attr', groupByValue)
+        form.append('csrfmiddlewaretoken', getCRSFToken())
+        fetch(this.urls.getLineFeatures, {
+            method: 'POST',
+            body: form,
+            credentials: 'same-origin',
         })
     }
 
@@ -492,6 +516,7 @@ export default class App extends Component {
                 groupByChange: this.publishChange,
                 groupByFilter,
                 validateSelectedResource: this.validateSelectedResource,
+                getLineFeatures: this.getLineFeatures,
             },
             publishForm: {
                 ...this.state.publishForm,

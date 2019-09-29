@@ -119,17 +119,19 @@ export default function OutlinedInputAdornments(props) {
     groupByValue,
     error,
     next,
+    skip,
     validateSelectedResource,
+    getLineFeatures,
   } = props
   const onNext = () => {
-    // validate in layer is selected otherwise set errors
     if (!selectedResource) validateSelectedResource(true)
-    // Set loading
-    // Go to next step with loading
-    // Validate in the back end
-    // If errors set errors
-    // if no errors let user select out layers and go to the final step
-    next()
+    else{
+      if (groupByValue.length == 0 && sortByValue.length == 0) skip()
+      else {
+        // next()
+        getLineFeatures()
+      }
+    }
   }
   return (
     <div className={classes.root}>
