@@ -131,13 +131,16 @@ export default function OutlinedInputAdornments(props) {
     onCheck,
     groupByValue,
     outLayers,
+    loading,
   } = props
   const onNext = () => {
     next()
   }
   return (
     <div className={classes.root}>
-      <Typography variant="subtitle1" className={classes.title}>Select Out Lines:</Typography>
+      <Typography variant="subtitle1" className={classes.title}>Select Out Lines:
+      {loading && <CircularProgress size={20}/>}
+      </Typography>
 
       <div className={classes.selectedLayer}>
         <Avatar className={classes.avatar}>

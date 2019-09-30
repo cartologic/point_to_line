@@ -145,6 +145,7 @@ export default class App extends Component {
 
         }
         if (res.status == 500) {
+            this.setState({loading: false})
             console.log(res.message)
         }
     }
@@ -537,6 +538,7 @@ export default class App extends Component {
                 groupByValue: this.state.step0.groupByValue,
                 onCheck: this.onOutLayerCheck,
                 onCheckAll: this.onOutLayerCheckAll,
+                loading: this.state.loading,
             },
             publishForm: {
                 ...this.state.publishForm,
@@ -547,7 +549,7 @@ export default class App extends Component {
                 groupByFilter,
                 outLayerNameChange: this.publishChange,
                 onApply: this.apply,
-                loading: this.state.loading
+                loading: this.state.loading,
             },
             resultsDialog: {
                 ...this.state.resultsDialog,
