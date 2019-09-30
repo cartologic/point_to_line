@@ -116,28 +116,25 @@ class PointsToMultiPath(object):
             # remove all duplicate features in case of sort by, Please look at Ex:
             # Ex: [a, a, b, c, d] => unique = [b, c, d], duplicates = [a, a]
             if self.sort_by_index is not None:
-                unique_features = []
+                unique_features = {}
                 duplicate_features = []
                 for f in features:
-                    # get index of feature in unique features
-                    feature_index_in_unique = -1
-                    for i, u in enumerate(unique_features):
-                        if f[self.sort_by_index] == u[self.sort_by_index]: 
-                            feature_index_in_unique = i
-                            break
-                    # if feature exist in unique_features
-                    if feature_index_in_unique != -1:
+                    # Check if f exist u
+                    try:
+                        u = unique_features[f[self.sort_by_index]]
                         # 1. Add current featute to duplicates
                         duplicate_features.append(f)
                         # 2. move feature from unique to duplicates
                         duplicate_features.append(u)
                         # 3. remove it from unique
-                        del unique_features[feature_index_in_unique]
-                    else:
-                        # append feature to unique features
-                        unique_features.append(f)
+                        del unique_features[f[self.sort_by_index]]
+                    except:
+                        # feature is not duplicated
+                        # Append it to unique
+                        unique_features[f[self.sort_by_index]] = f
+
                 result[key] = {}
-                result[key]['unique'] = [f[self.sort_by_index] for f in unique_features]
+                # result[key]['unique'] = [f[self.sort_by_index] for f in unique_features]
                 result[key]['duplicate'] = [f[self.sort_by_index] for f in duplicate_features]
         return result
 
@@ -151,27 +148,23 @@ class PointsToMultiPath(object):
             # remove all duplicate features in case of sort by, Please look at Ex:
             # Ex: [a, a, b, c, d] => unique = [b, c, d], duplicates = [a, a]
             if self.sort_by_index is not None:
-                unique_features = []
+                unique_features = {}
                 duplicate_features = []
                 for f in features:
-                    # get index of feature in unique features
-                    feature_index_in_unique = -1
-                    for i, u in enumerate(unique_features):
-                        if f[self.sort_by_index] == u[self.sort_by_index]: 
-                            feature_index_in_unique = i
-                            break
-                    # if feature exist in unique_features
-                    if feature_index_in_unique != -1:
+                    # Check if f exist u
+                    try:
+                        u = unique_features[f[self.sort_by_index]]
                         # 1. Add current featute to duplicates
                         duplicate_features.append(f)
                         # 2. move feature from unique to duplicates
                         duplicate_features.append(u)
                         # 3. remove it from unique
-                        del unique_features[feature_index_in_unique]
-                    else:
-                        # append feature to unique features
-                        unique_features.append(f)
-                features = unique_features
+                        del unique_features[f[self.sort_by_index]]
+                    except:
+                        # feature is not duplicated
+                        # Append it to unique
+                        unique_features[f[self.sort_by_index]] = f
+                features = [unique_features[key] for key in unique_features.keys()]
                 
             # human / natural sorting features by sort attr inside the dict:
             if self.sort_by_index is not None:
