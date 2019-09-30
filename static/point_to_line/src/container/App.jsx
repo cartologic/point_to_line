@@ -18,10 +18,13 @@ export default class App extends Component {
                 attributes: [],
                 sortByValue: '',
                 groupByValue: '',
-                errors: {},
             },
             step1: {
                 outLayers: [],
+            },
+            step2: {
+                outLayerName: '',
+                error: false,
             },
             publishForm: {
                 selectedResource: undefined,
@@ -57,6 +60,8 @@ export default class App extends Component {
         this.validateSelectedResource = this.validateSelectedResource.bind(this)
         this.getLineFeatures = this.getLineFeatures.bind(this)
         this.getLayerAttributes = this.getLayerAttributes.bind(this)
+        this.outLayerNameChange = this.outLayerNameChange.bind(this)
+        this.validateOutLayerName = this.validateOutLayerName.bind(this)
         this.publishChange = this.publishChange.bind(this)
         this.onOutLayerCheck = this.onOutLayerCheck.bind(this)
         this.onOutLayerCheckAll = this.onOutLayerCheckAll.bind(this)
@@ -148,6 +153,40 @@ export default class App extends Component {
             this.setState({loading: false})
             console.log(res.message)
         }
+    }
+
+    outLayerNameChange(e){
+        this.setState({
+            step2:{
+                ...this.state.step2,
+                outLayerName: e.target.value,
+                error: false,
+            }
+        })
+    }
+
+    validateOutLayerName(){
+        const validateTableName = (tableName) => {
+            let re = /^[a-z0-9_]{1,63}$/
+            return tableName && re.test(tableName)
+        }
+        const name = this.state.step2.outLayerName
+        const valid = name.length > 0 && validateTableName(name) 
+        if (valid)
+        this.setState({
+            step2:{
+                ...this.state.step2,
+                error: false
+            }
+        })
+        else
+        this.setState({
+            step2:{
+                ...this.state.step2,
+                error: true
+            }
+        })
+        return valid
     }
 
     fetchResources() {
@@ -294,33 +333,6 @@ export default class App extends Component {
                 })
             })
         }
-        const lineLayersSuccess = (res) => {
-            res.json().then(jsonResponse => {
-                this.setState({
-                    loading: false,
-                    outLayersDialog: {
-                        ...this.state.outLayersDialog,
-                        open: true,
-                        errors: undefined,
-                        success: jsonResponse.message,
-                        outLayers: jsonResponse.objects.map(l=>{return{...l, checked: false}})
-                    }
-                })
-            })
-        }
-        const lineLayersFailure = (res) => {
-            res.json().then(jsonResponse => {
-                this.setState({
-                    loading: false,
-                    outLayersDialog: {
-                        ...this.state.outLayersDialog,
-                        open: true,
-                        errors: jsonResponse.message,
-                        success: undefined,
-                    }
-                })
-            })
-        }
         const submit = ({
             inLayerName,
             outLayerName,
@@ -352,116 +364,27 @@ export default class App extends Component {
                     }
                 })
         }
-        const getLineFeatures = ({
-            inLayerName,
-            outLayerName,
-            sortByValue,
-            groupByValue
-        }) => {
-            let form = new FormData();
-            form.append('in_layer_name', inLayerName)
-            if (sortByValue && sortByValue.length > 0)
-                form.append('sort_by_attr', sortByValue)
-            if (groupByValue && groupByValue.length > 0)
-                form.append('group_by_attr', groupByValue)
-            form.append('out_layer_name', outLayerName)
-            form.append('csrfmiddlewaretoken', getCRSFToken())
-            fetch(this.urls.getLineFeatures, {
-                method: 'POST',
-                body: form,
-                credentials: 'same-origin',
-            })
-                .then(res => {
-                    if (res.status == 500) {
-                        lineLayersFailure(res)
-                    }
-                    if (res.status == 200) {
-                        lineLayersSuccess(res)
-                    }
-                })
-        }
         const {
             selectedResource,
             sortByValue,
             groupByValue,
-            outLayerName,
-        } = this.state.publishForm
-        const checkedLineFeatures = this.state.outLayersDialog.outLayers.filter(l=>l.checked).map(l=>l.name)
+        } = this.state.step0
         const inLayerName = selectedResource && selectedResource.name
-        const errors = this.validateFormData({
-            inLayerName,
-            outLayerName,
-            sortByValue,
-            groupByValue
-        })
-        if (errors) {
-            this.setState({
-                publishForm: {
-                    ...this.state.publishForm,
-                    errors,
-                }
-            })
-        } else {
-            if (groupByValue.length == 0) {
-                // get single line feature from all points in the selected point layer
-                // submit without checkedLineFeatures
-                this.setState({
-                    publishForm: {
-                        ...this.state.publishForm,
-                        errors: {},
-                    },
-                    loading: true
-                },
-                    () => {
-                        submit({
-                            inLayerName,
-                            outLayerName,
-                            sortByValue,
-                            groupByValue
-                        })
-                    }
-                )
+        const checkedLineFeatures = this.state.step1.outLayers.filter(l=>l.checked).map(l=>l.name)
+        const {outLayerName} = this.state.step2        
+        this.setState({
+            loading: true
+        },
+            () => {
+                submit({
+                    inLayerName,
+                    outLayerName,
+                    sortByValue,
+                    groupByValue,
+                    checkedLineFeatures
+                })
             }
-
-            if (groupByValue.length > 0 && checkedLineFeatures.length == 0) {
-                this.setState({
-                    publishForm: {
-                        ...this.state.publishForm,
-                        errors: {},
-                    },
-                    loading: true
-                },
-                    () => {
-                        getLineFeatures({
-                            inLayerName,
-                            outLayerName,
-                            sortByValue,
-                            groupByValue
-                        })
-                    }
-                )
-            }
-            if (groupByValue.length > 0 && checkedLineFeatures.length > 0) {
-                // submit with list of selected line features
-                this.setState({
-                    publishForm: {
-                        ...this.state.publishForm,
-                        errors: {},
-                    },
-                    loading: true
-                },
-                    () => {
-                        submit({
-                            inLayerName,
-                            outLayerName,
-                            sortByValue,
-                            groupByValue,
-                            checkedLineFeatures
-                        })
-                    }
-                )
-            }
-        }
+        )
     }
     onOutLayerCheckAll(e){
         const outLayers = this.state.step1.outLayers
@@ -539,6 +462,13 @@ export default class App extends Component {
                 onCheck: this.onOutLayerCheck,
                 onCheckAll: this.onOutLayerCheckAll,
                 loading: this.state.loading,
+            },
+            step2: {
+                ...this.state.step2,
+                outLayerNameChange: this.outLayerNameChange,
+                loading: this.state.loading,
+                onApply: this.apply,
+                validateOutLayerName: this.validateOutLayerName,
             },
             publishForm: {
                 ...this.state.publishForm,
