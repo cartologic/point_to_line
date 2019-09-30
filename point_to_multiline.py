@@ -172,7 +172,7 @@ class PointsToMultiPath(object):
                     text) if text.isdigit() else text.lower()
 
                 def alphanum_key(key): return [
-                    convert(s) for s in re.split('([0-9]+)', key[self.sort_by_index])
+                    convert(s) for s in re.split('([0-9]+)', str(key[self.sort_by_index]))
                 ]
                 sorted_features = sorted(features, key=alphanum_key)
 
