@@ -146,6 +146,7 @@ class PointsToMultiPath(object):
         out_features = []
         for i, key in enumerate(self.features_dict, start=1):
             features = self.features_dict[key]
+            sorted_features = features
             
             # remove all duplicate features in case of sort by, Please look at Ex:
             # Ex: [a, a, b, c, d] => unique = [b, c, d], duplicates = [a, a]
@@ -182,7 +183,6 @@ class PointsToMultiPath(object):
                 ]
                 sorted_features = sorted(features, key=alphanum_key)
 
-            sorted_features = features
             # create a new line geometry
             line = ogr.Geometry(ogr.wkbLineString)
             for feat in sorted_features:
