@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-import PublishForm from "./steps/PublishForm";
 import Step0 from "./steps/Step0";
 import Step1 from "./steps/Step1"
+import Step2 from "./steps/Step2"
 export default class Stepper extends Component {
     constructor (props) {
         super(props)
@@ -31,6 +31,7 @@ export default class Stepper extends Component {
         const {
             step0,
             step1,
+            step2,
         } = this.props
         const steps = [
             {
@@ -46,6 +47,13 @@ export default class Stepper extends Component {
                 props: {
                     ...step1,
                     next: this.next,
+                    previous: this.previous,
+                },
+            },
+            {
+                component: Step2,
+                props: {
+                    ...step2,
                     previous: this.previous,
                 },
             },

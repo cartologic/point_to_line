@@ -18,6 +18,7 @@ export default (props) => {
   const {
     step0,
     step1,
+    step2,
   } = props
   return (
     <div>
@@ -27,6 +28,7 @@ export default (props) => {
           <Stepper
             step0={{...step0}}
             step1={{...step1}}
+            step2={{...step2}}
           />
           <ResourceSelectDialog {...props.resourceSelectProps} />
           <ResultsDialog {...props.resultsDialog} />

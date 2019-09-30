@@ -38,6 +38,9 @@ const useStyles = makeStyles(theme => ({
     margin: '8px',
     color: '#616161',
   },
+  directions: {
+    width: '100%',
+  },
   nextButton: {
     float: 'right',
   },
@@ -110,8 +113,8 @@ const LayersSelectComponent = (props) => {
                 Duplicated Features Found:
               </Typography>
             }
-            {layer.duplicated_features.map(f => (
-              <Typography variant={'subtitle2'} color={'error'}>
+            {layer.duplicated_features.map((f, index) => (
+              <Typography key={index} variant={'subtitle2'} color={'error'}>
                 {f}
               </Typography>
             ))}
@@ -186,7 +189,7 @@ export default function OutlinedInputAdornments(props) {
         />
         <Previous
           next={false}
-          className={classes.prev}
+          className={classes.prevButton}
           onClick={previous}
         />
       </div>
