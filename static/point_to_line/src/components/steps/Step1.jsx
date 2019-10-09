@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -82,6 +82,13 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: '10px',
     marginBottom: '20px',
   },
+  checkBoxesError: {
+    height: '300px',
+    overflow: 'auto',
+    border: '2px dashed red',
+    paddingLeft: '10px',
+    marginBottom: '20px',
+  },
   checkAllCheckBox: {
     marginLeft: '10px',
   }
@@ -136,13 +143,22 @@ export default function OutlinedInputAdornments(props) {
     outLayers,
     loading,
   } = props
+  const [error, setError] = useState(false)
   const onNext = () => {
-    next()
+    const { outLayers } = props
+    const selected = outLayers.filter(l => l.checked)
+    if (selected.length > 0){
+      setError(false)
+      next()
+    }
+    else {
+      setError(true)
+    }
   }
   return (
     <div className={classes.root}>
       <Typography variant="subtitle1" className={classes.title}>Select Out Lines:
-      {loading && <CircularProgress size={20}/>}
+      {loading && <CircularProgress size={20} />}
       </Typography>
 
       <div className={classes.selectedLayer}>
@@ -163,7 +179,7 @@ export default function OutlinedInputAdornments(props) {
         <div className={classes.layerDetails}>
           <Typography>
             Select All
-                </Typography>
+          </Typography>
           <Typography variant={'subtitle2'} color={'error'}>
             Warning: Only Lines with more than 1 point can be selected
           </Typography>
@@ -173,11 +189,12 @@ export default function OutlinedInputAdornments(props) {
         </div>
       </div>
 
-      <div className={classes.checkBoxes}>
+      <div className={error ? classes.checkBoxesError: classes.checkBoxes}>
         <LayersSelectComponent
           outLayers={outLayers}
           onChange={onCheck}
           groupByValue={groupByValue}
+          error={error}
         />
       </div>
 
