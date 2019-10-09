@@ -7,24 +7,44 @@ export default class Stepper extends Component {
         super(props)
         this.state = {
             current: 0,
+            skipped: [],
         }
         this.next = this.next.bind(this)
         this.skip = this.skip.bind(this)
         this.previous = this.previous.bind(this)
     }
     next(){
+        const current = this.state.current
+        const next = current + 1
+        // remove next from skipped array
+        const skipped = this.state.skipped.filter(s=>s!=next)
+        
         this.setState({
-            current: this.state.current + 1
+            current: current + 1,
+            skipped: skipped,
         })
     }
     skip(){
+        const current = this.state.current
+        const next = current + 1
         this.setState({
-            current: this.state.current + 2
+            current: current + 2,
+            skipped: [...this.state.skipped, next]
         })
     }
     previous(){
+        const current = this.state.current
+        let previous = current - 1
+        const skipped = this.state.skipped
+        let index = 1
+        skipped.forEach(s=>{
+            if (s == previous){
+                    index += 1
+                    previous -= 1
+            }
+        })
         this.setState({
-            current: this.state.current - 1
+            current: this.state.current - index
         })
     }
     render () {
