@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import PublishForm from './PublishForm'
+import Stepper from "./Stepper";
 import ResourceSelectDialog from './ResourceSelectDialog'
 import ResultsDialog from './ResultsDialog'
 import OutLayersDialog from './OutLayersDialog'
@@ -15,12 +15,21 @@ const useStyles = makeStyles(theme => ({
 }));
 export default (props) => {
   const classes = useStyles();
+  const {
+    step0,
+    step1,
+    step2,
+  } = props
   return (
     <div>
       <CssBaseline />
       <Container maxWidth="md">
         <Paper className={classes.root}>
-          <PublishForm {...props.publishForm} />
+          <Stepper
+            step0={{...step0}}
+            step1={{...step1}}
+            step2={{...step2}}
+          />
           <ResourceSelectDialog {...props.resourceSelectProps} />
           <ResultsDialog {...props.resultsDialog} />
           <OutLayersDialog {...props.outLayersDialog} />

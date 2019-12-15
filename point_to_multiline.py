@@ -29,7 +29,7 @@ class PointsToMultiPath(object):
 
         self.create_out_layer()
         self.create_out_features_field()
-        self.features_dict = self.create_features_dict()
+        self.create_features_dict()
         self.out_features = self.create_out_features()
 
         self.commit_transactions()
@@ -70,6 +70,7 @@ class PointsToMultiPath(object):
         # consider all point features in one line feature if not (group by)
         if self.group_by_index is None:
             features_dict['single_feature'] = [f for f in self.in_layer]
+            self.features_dict = features_dict
             return features_dict
         for f in self.in_layer:
             line_name = str(f[self.group_by_index])
@@ -96,38 +97,74 @@ class PointsToMultiPath(object):
                     # create list of features if not existing
                     features_dict[line_name] = []
                     features_dict[line_name].append(f)
+        self.features_dict = features_dict
         return features_dict
 
-    def create_out_features(self):
-        # Lines Creation Process:
-        out_features = []
+    def get_duplicated_features(self):
+        ''' returns dictionary with duplicated and unique features based on sort by attribute 
+            result = {
+                key:{
+                    unique:[],
+                    duplicate:[],
+                }
+            }
+        '''
+        result = {}
         for i, key in enumerate(self.features_dict, start=1):
             features = self.features_dict[key]
             
             # remove all duplicate features in case of sort by, Please look at Ex:
             # Ex: [a, a, b, c, d] => unique = [b, c, d], duplicates = [a, a]
             if self.sort_by_index is not None:
-                unique_features = []
+                unique_features = {}
                 duplicate_features = []
                 for f in features:
-                    # get index of feature in unique features
-                    feature_index_in_unique = -1
-                    for i, u in enumerate(unique_features):
-                        if f[self.sort_by_index] == u[self.sort_by_index]: 
-                            feature_index_in_unique = i
-                            break
-                    # if feature exist in unique_features
-                    if feature_index_in_unique != -1:
+                    # Check if f exist u
+                    try:
+                        u = unique_features[f[self.sort_by_index]]
                         # 1. Add current featute to duplicates
                         duplicate_features.append(f)
                         # 2. move feature from unique to duplicates
                         duplicate_features.append(u)
                         # 3. remove it from unique
-                        del unique_features[feature_index_in_unique]
-                    else:
-                        # append feature to unique features
-                        unique_features.append(f)
-                features = unique_features
+                        del unique_features[f[self.sort_by_index]]
+                    except:
+                        # feature is not duplicated
+                        # Append it to unique
+                        unique_features[f[self.sort_by_index]] = f
+
+                result[key] = {}
+                # result[key]['unique'] = [f[self.sort_by_index] for f in unique_features]
+                result[key]['duplicate'] = [f[self.sort_by_index] for f in duplicate_features]
+        return result
+
+    def create_out_features(self):
+        # Lines Creation Process:
+        out_features = []
+        for i, key in enumerate(self.features_dict, start=1):
+            features = self.features_dict[key]
+            sorted_features = features
+            
+            # remove all duplicate features in case of sort by, Please look at Ex:
+            # Ex: [a, a, b, c, d] => unique = [b, c, d], duplicates = [a, a]
+            if self.sort_by_index is not None:
+                unique_features = {}
+                duplicate_features = []
+                for f in features:
+                    # Check if f exist u
+                    try:
+                        u = unique_features[f[self.sort_by_index]]
+                        # 1. Add current featute to duplicates
+                        duplicate_features.append(f)
+                        # 2. move feature from unique to duplicates
+                        duplicate_features.append(u)
+                        # 3. remove it from unique
+                        del unique_features[f[self.sort_by_index]]
+                    except:
+                        # feature is not duplicated
+                        # Append it to unique
+                        unique_features[f[self.sort_by_index]] = f
+                features = [unique_features[key] for key in unique_features.keys()]
                 
             # human / natural sorting features by sort attr inside the dict:
             if self.sort_by_index is not None:
@@ -135,11 +172,10 @@ class PointsToMultiPath(object):
                     text) if text.isdigit() else text.lower()
 
                 def alphanum_key(key): return [
-                    convert(s) for s in re.split('([0-9]+)', key[self.sort_by_index])
+                    convert(s) for s in re.split('([0-9]+)', str(key[self.sort_by_index]))
                 ]
                 sorted_features = sorted(features, key=alphanum_key)
 
-            sorted_features = features
             # create a new line geometry
             line = ogr.Geometry(ogr.wkbLineString)
             for feat in sorted_features:
@@ -166,6 +202,7 @@ class PointsToMultiPath(object):
             self.out_layer.CommitTransaction()
 
     def delete_layer(self, layer_name):
+        print('Deleting layer \'{}\' from database'.format(layer_name))
         self.conn.DeleteLayer(layer_name)
 
     def close_connection(self):
