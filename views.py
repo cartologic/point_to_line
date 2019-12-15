@@ -1,18 +1,14 @@
-import os
-import re
-import uuid
 import json
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render
+from geonode.layers.models import Layer
 
 from . import APP_NAME
 from .forms import PointToLineForm
 from .point_to_multiline import PointsToMultiPath
-from .publishers import publish_in_geonode, publish_in_geoserver
+from .publishers import publish_in_geonode, publish_in_geoserver, cascade_delete_layer
 from .utils import create_connection_string, table_exist
 
 
@@ -67,7 +63,7 @@ def get_line_features(request):
         }
         return JsonResponse(json_response, status=200)
     json_response = {"status": False,
-                        "message": "Error while getting line features, Form is not valid!", }
+                     "message": "Error while getting line features, Form is not valid!", }
     return JsonResponse(json_response, status=500)
 
 
@@ -115,30 +111,44 @@ def generate(request):
                 p.close_connection()
                 ogr_error = 'Error while creating Line Layer: {}'.format(e)
                 json_response = {"status": False,
-                                 "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator \n\n ogr_error:{}".format(ogr_error), }
+                                 "message": "Error While Creating Line Layer In The Database! Try again or contact the administrator \n\n ogr_error:{}".format(
+                                     ogr_error), }
                 return JsonResponse(json_response, status=500)
             # 4. Create GeoServer
-            try:
-                publish_in_geoserver(out_layer_name)
-            except:
-                # roll back and delete table if exist
+            gs_response = publish_in_geoserver(out_layer_name)
+            if gs_response.status_code != 201:
+                if gs_response.status_code == 500:
+                    # status code 500:
+                    # layer exist in geoserver datastore and does not exist in database
+                    # hence the database check is done in step 2
+                    # cascade delete is a method deletes layer from geoserver and database
+                    cascade_delete_layer(str(out_layer_name))
+                # delete from database as well
                 p.start_connection()
                 p.delete_layer(str(out_layer_name))
                 p.close_connection()
                 json_response = {
-                    "status": False, "message": "Could not publish to GeoServer, Try again or contact the administrator", 'warnings': warnings}
+                    "status": False, "message": "Could not publish to GeoServer, Error Response Code:{}".format(
+                        gs_response.status_code), 'warnings': warnings}
                 return JsonResponse(json_response, status=500)
 
             # 5. GeoNode Publish
             try:
                 layer = publish_in_geonode(out_layer_name, owner=request.user)
-            except:
+            except Exception as e:
                 # roll back and delete table if exist
                 p.start_connection()
                 p.delete_layer(str(out_layer_name))
                 p.close_connection()
+                cascade_delete_layer(str(out_layer_name))
+                try:
+                    Layer.objects.get(name=str(out_layer_name)).delete()
+                finally:
+                    print('Layer {} could not be deleted or does not already exist'.format(out_layer_name))
+                print('Error while publishing {} in geonode: {}'.format(out_layer_name, e.message))
                 json_response = {
-                    "status": False, "message": "Could not publish in GeoNode, Try again or contact the administrator", 'warnings': warnings}
+                    "status": False, "message": "Could not publish in GeoNode, Try again or contact the administrator",
+                    'warnings': warnings}
                 return JsonResponse(json_response, status=500)
 
             json_response = {"status": True, "message": "Line Layer Created Successfully!",
