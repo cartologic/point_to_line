@@ -202,6 +202,7 @@ class PointsToMultiPath(object):
             self.out_layer.CommitTransaction()
 
     def delete_layer(self, layer_name):
+        print('Deleting layer \'{}\' from database'.format(layer_name))
         self.conn.DeleteLayer(layer_name)
 
     def close_connection(self):
