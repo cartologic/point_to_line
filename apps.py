@@ -1,6 +1,8 @@
 from django.apps import AppConfig
 
+from . import APP_NAME
 
-class PointToLinerConfig(AppConfig):
-    name = 'point_to_line'
+
+class PointToLineConfig(AppConfig):
+    name = APP_NAME
     verbose_name = "Point To Line"
